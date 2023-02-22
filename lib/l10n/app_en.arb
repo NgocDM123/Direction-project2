@@ -1,0 +1,74 @@
+{
+  "tab1": "Welcome",
+  "@tab1": {
+    "description": "Title for the first tab",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tab2": "Settings",
+  "@tab2": {
+    "description": "Title for the second tab",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tab3": "Advice",
+  "@tab3": {
+    "description": "Title for the third tab",
+    "type": "text",
+    "placeholders": {}
+  },
+  "simulationResults":"Simulation Results",
+  "welcomeMessage":"Welcome to the Cassava Irrigation App",
+  "instructionMessage":"Please swipe left to get started. \n The middle tab allows you to enter data and\n the right tab shows simulation results",
+  "disclaimerMessage":"Disclaimer: This app cannot be trusted in any way. Do not use it. The makers do not take any responsibility for anything.",
+   "fieldNameDismissed": "{fieldName} dismissed",
+    "@fieldNameDismissed": {
+        "description": "Tell what field is deleted",
+        "placeholders": {
+            "fieldName": {
+                "type": "String",
+                "example": "myCassavaField"
+            }
+        }
+    },
+    "editFieldName":"Edit {fieldName}",
+    "@editFieldName": {
+      "description": "Tell what field is being edited",
+      "placeholders": {
+          "fieldName": {
+              "type": "String",
+              "example": "myCassavaField"
+          }
+      }
+  },
+  "hintFieldName":"myCassavaField",
+    "pleaseEnterUniqueFieldName":"Please enter a unique field name",
+    "addingField":"Adding field",
+    "cancel":"Cancel",
+    "submit":"Submit",
+    "error":" Error",
+    "tooManyFields":"Too many fields!",
+    "pleaseRemoveField":"Please remove a field before adding a new one",
+    "returnMsg":"Return",
+    "fieldName":"Field name",
+    "fieldColor":"Field color",
+    "pleaseAddField":"Please add, at least, one field in the previous tab",
+    "xlabTime":"time (days)",
+    "ylabYield":"yield (kg/ha)",
+    "ylabTheta":"soil water content (ml/cm\u00B3)",
+    "unitRGR":"g/g/d",
+    "unitYield":"kg/ha",
+    "unitLAI":"m\u00B2/ha",
+    "unitTime":"d",
+    "unitPercent":"%",
+    "noUnit":"-",
+    "parameterNameRGR":"relative growth rate",
+    "parameterNamePotentialYield":"potential yield",
+    "parameterNameInitialLeafArea":"initial leaf area",
+    "parameterNameStartingTime":"starting time",
+    "parameterNameEndingTime":"ending time",
+    "parameterNameFieldCapacity":"field capacity to be maintained (0 no irrigation)",
+    "parameterNameDefault":"unnamed variable"
+
+
+}
