@@ -272,7 +272,7 @@ class Fields {
         options: Options(
           responseType: ResponseType.bytes,
           followRedirects: false,
-          receiveTimeout: 0,
+          receiveTimeout: Duration(hours: 0, minutes: 3, seconds: 2),
         ),
       );
 

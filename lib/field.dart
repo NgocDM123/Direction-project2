@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'classParameterSet.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'dart:math';
 
 import 'draw_graph/models/feature.dart';
@@ -33,33 +33,47 @@ class Field {
   final double iLA; //Leaf area index (adjust by user)
   final double rgr; //relative growth rate (adjust by user)
   final List<double> yields; // predicted by model
+  final String checkYeildDate; //
 
-  Field(
-      {required this.fieldName,
-      //required this.Vs,
-      required this.rainFall,
-      required this.dAP,
-      required this.humidity30,
-      required this.humidity60,
-      required this.temperature,
-      required this.soilTemperature,
-      required this.windSpeed,
-      required this.Rn,
-      required this.irrigation,
-      required this.amountOfIrrigation,
-      required this.potentialYield,
-      required this.iLA,
-      required this.rgr,
-      required this.yields});
+  Field({
+    required this.fieldName,
+    //required this.Vs,
+    required this.rainFall,
+    required this.dAP,
+    required this.humidity30,
+    required this.humidity60,
+    required this.temperature,
+    required this.soilTemperature,
+    required this.windSpeed,
+    required this.Rn,
+    required this.irrigation,
+    required this.amountOfIrrigation,
+    required this.potentialYield,
+    required this.iLA,
+    required this.rgr,
+    required this.yields,
+    required this.checkYeildDate,
+  });
 
+  // todo test db
+  Future<void> updateTemperatureToDatabase() async {
+    FirebaseDatabase database = FirebaseDatabase.instance;
+    DatabaseReference ref = FirebaseDatabase.instance.ref("field1");
+    await ref.update({
+      "Temperature": 35,
+    });
+  }
 
   //todo predict yield of the field day by day
-  Future<double> predictYield() async{
+  Future<double> predictYield() async {
     if (this.yields.length < 1) {
-      return 0;
       this.yields[0] = this.iLA;
     }
+
+
+    List<double> k; // coefficients of the equation
     var y = this.yields[this.yields.length - 1];
+
     var nextY;
     return nextY;
   }
@@ -74,8 +88,12 @@ class Field {
         ((T + 237.3) * (T + 237.3))); // cong thuc tra bang [15] trong report
     var G = this.soilTemperature;
     var u2 = this.windSpeed;
-    var es = 4.719;///? tuong ung voi nhiet do khoang 30 C
-    var ea = 4.719;/// ?
+    var es = 4.719;
+
+    ///? tuong ung voi nhiet do khoang 30 C
+    var ea = 4.719;
+
+    /// ?
     var ET0 = (0.408 * delta * (this.Rn - G) +
             _gamma * (900 / (T + 273) * u2 * (es - ea))) /
         (delta + _gamma * (1 + 0.34 * u2));
@@ -92,12 +110,11 @@ class Field {
     var ETc = ET0 * Kc; // luong thoat hoi nuoc thuc te
 
     //todo calculate swc
-    var swc = (this.amountOfIrrigation + this.rainFall + swl - ETc) / Vs; // soil water content
+    var swc = (this.amountOfIrrigation + this.rainFall + swl - ETc) /
+        Vs; // soil water content
     var waterStress = max(0, 1 - exp((swc - _thr) * (-40)));
     //todo calculate yn1
     yn1 = this.rgr * yn * (1 - (yn / this.potentialYield)) * waterStress;
     return yn1;
   }
-
-
 }
