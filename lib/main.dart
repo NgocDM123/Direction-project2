@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
       ),
       //home: MyHomePage(title: 'Cassava irrigation'),
       home: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
               flexibleSpace: new Column(
