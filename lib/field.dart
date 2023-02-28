@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'classParameterSet.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:math';
@@ -16,24 +15,25 @@ const double _appi =
 const double _gamma = 0.067; //tra bang[15] trong bao cao do an
 
 class Field {
-  final String fieldName;
+  String fieldName;
 
   //final double Vs; // soil volume
-  final double rainFall; //(measure)
-  final double dAP; //day after plant
-  final double humidity30; //(measure)
-  final double humidity60; //(measure)
-  final double temperature; //(measure) nhiet do khong khi
-  final double soilTemperature; //(measure)
-  final double windSpeed; //(measure)
-  final double Rn; //(measure) buc xa be mat cay trong
-  final bool irrigation; //(determined from model)
-  final double amountOfIrrigation; // luong nuoc tuoi tieu (mm/day)
-  final double potentialYield; // (adjust by user)
-  final double iLA; //Leaf area index (adjust by user)
-  final double rgr; //relative growth rate (adjust by user)
-  final List<double> yields; // predicted by model
-  final String checkYeildDate; //
+  double rainFall; //(measure)
+  int dAP; //day after plant
+  double humidity30; //(measure)
+  double humidity60; //(measure)
+  double temperature; //(measure) nhiet do khong khi
+  double soilTemperature; //(measure)
+  double windSpeed; //(measure)
+  double Rn; //(measure) buc xa be mat cay trong
+  bool irrigation; //(determined from model)
+  double amountOfIrrigation; // luong nuoc tuoi tieu (mm/day)
+  double potentialYield; // (adjust by user)
+  double iLA; //Leaf area index (adjust by user)
+  double rgr; //relative growth rate (adjust by user)
+  List<double> yields; // predicted by model
+  String checkYieldDate; //
+  bool autoIrrigation;
 
   Field({
     required this.fieldName,
@@ -52,16 +52,70 @@ class Field {
     required this.iLA,
     required this.rgr,
     required this.yields,
-    required this.checkYeildDate,
+    required this.checkYieldDate,
+    required this.autoIrrigation,
   });
 
-  // todo test db
-  Future<void> updateTemperatureToDatabase() async {
-    FirebaseDatabase database = FirebaseDatabase.instance;
-    DatabaseReference ref = FirebaseDatabase.instance.ref("field1");
-    await ref.update({
-      "Temperature": 35,
-    });
+  Field.newOne(String name)
+      : fieldName = name,
+        rainFall = 0,
+        dAP = 0,
+        humidity30 = 0,
+        humidity60 = 0,
+        temperature = 0,
+        soilTemperature = 0,
+        windSpeed = 0,
+        Rn = 0,
+        irrigation = false,
+        amountOfIrrigation = 0,
+        potentialYield = 0,
+        iLA = 0,
+        rgr = 0,
+        yields = [0],
+        checkYieldDate = "",
+        autoIrrigation = true;
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      "fieldName": fieldName,
+      "rainFall": rainFall,
+      "dAP": dAP,
+      "humidity30": humidity30,
+      "humidity60": humidity60,
+      "temperature": temperature,
+      "soilTemperature": soilTemperature,
+      "windSpeed": windSpeed,
+      "Rn": Rn,
+      "irrigation": irrigation,
+      "amountOfIrrigation": amountOfIrrigation,
+      "potentialYield": potentialYield,
+      "iLA": iLA,
+      "rgr": rgr,
+      "yields": yields,
+      "checkYieldDate": checkYieldDate,
+      "autoIrrigation": autoIrrigation,
+    };
+    return map;
+  }
+
+  fromMap(Map<String, dynamic> map) {
+    fieldName = map['fieldName'];
+    rainFall = map['rainFall'];
+    dAP = map['dAP'];
+    humidity30 = map['humidity30'];
+    humidity60 = map['humidity60'];
+    temperature = map['temperature'];
+    soilTemperature = map['soilTemperature'];
+    windSpeed = map['windSpeed'];
+    Rn = map['Rn'];
+    irrigation = map['irrigation'];
+    amountOfIrrigation = map['amountOfIrrigation'];
+    potentialYield = map['potentialYield'];
+    iLA = map['iLA'];
+    rgr = map['rgr'];
+    yields = map['yields'];
+    checkYieldDate = map['checkYieldDate'];
+    autoIrrigation = map['autoIrrigation'];
   }
 
   //todo predict yield of the field day by day
@@ -69,7 +123,6 @@ class Field {
     if (this.yields.length < 1) {
       this.yields[0] = this.iLA;
     }
-
 
     List<double> k; // coefficients of the equation
     var y = this.yields[this.yields.length - 1];

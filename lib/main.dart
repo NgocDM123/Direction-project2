@@ -1,4 +1,5 @@
 import 'package:direction/classFields.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 //languages see https://docs.flutter.dev/development/accessibility-and-localization/internationalization
 //TODO ios language support needs additional steps in xcode, see website above
@@ -29,6 +30,20 @@ Future main() async {
     // Change the default factory
     databaseFactory = databaseFactoryFfi;
   }
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  // DatabaseReference starCountRef =
+  // FirebaseDatabase.instance.ref("field2/measuring");
+  // print("------------o ngoai----------");
+  // starCountRef.onValue.listen((DatabaseEvent event) {
+  //   final data = event.snapshot.value;
+  //   //updateStarCount(data);
+  //   print("-------------o troong------------");
+  //   print(data);
+  //   print("-------------o duoi---------");
+  // });
+
+
 
   runApp(MyApp());
   if (readFile == 0) {
