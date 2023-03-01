@@ -1,11 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:direction/field_detail.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'field.dart';
-import 'styles.dart';
+
+import '../model/field.dart';
+import '../styles.dart';
+import 'field_detail.dart';
+
+const String USER = 'user1';
+const String TEST_USER = 'testUser';
 
 class FieldList extends StatefulWidget {
   @override
@@ -25,12 +28,12 @@ class _FieldListState extends State<FieldList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Fields"),
+        title: Text(
+            "Fields",
+        ),
       ),
       body: Stack(
         children: [
-          _renderFieldList(context),
-          _renderButtonAdd(),
           _displayForm
               ? Container(
                   child: _addField(),
@@ -39,6 +42,8 @@ class _FieldListState extends State<FieldList> {
                   alignment: Alignment.center,
                 )
               : Container(),
+          _renderFieldList(context),
+          _renderButtonAdd(),
         ],
       ),
     );
@@ -55,6 +60,7 @@ class _FieldListState extends State<FieldList> {
       future: this.getFieldNameFromDb(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          fields = [];
           for (DataSnapshot child in snapshot.data!.children) {
             Field f = Field.newOne(child.key!);
             fields.add(f);
@@ -77,12 +83,30 @@ class _FieldListState extends State<FieldList> {
     return GestureDetector(
         onTap: () => _navigateToFieldDetail(context, field),
         child: Container(
-          child: Text(
-            field.fieldName,
-            textAlign: TextAlign.left,
-            style: Styles.headerLarge,
+          child: Stack(
+            children: [
+              Text(
+                field.fieldName,
+                textAlign: TextAlign.left,
+                style: Styles.locationTileTitleDark
+              ),
+              Container(
+                child: PopupMenuButton(
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      child: Text('Delete'),
+                      onTap: () => {
+                        _deleteField(field.fieldName),
+                      },
+                    )
+                  ],
+                  color: Colors.white,
+                ),
+                alignment: Alignment.centerRight,
+              ),
+            ],
           ),
-          height: 50,
+          height: 70,
           padding: EdgeInsets.fromLTRB(25.0, 15.0, 15.0, 15.0),
           color: Colors.blue,
         ));
@@ -110,7 +134,12 @@ class _FieldListState extends State<FieldList> {
   Widget _addField() {
     var result = TextField(
       onSubmitted: (String text) {
-        _createDefaultField(text);
+        if (text == '') {
+          setState(() {
+            this._displayForm = false;
+          });
+        } else
+          _createDefaultField(text);
       },
       autofocus: true,
       decoration: InputDecoration(
@@ -122,16 +151,27 @@ class _FieldListState extends State<FieldList> {
   }
 
   void _createDefaultField(String name) {
-    Field field = Field.newOne(name);
-    fields.add(field);
+    final newPostKey = FirebaseDatabase.instance.ref().child(USER).push();
+    final Map<String, dynamic> updates = {};
+    DateTime date = DateTime.now();
+    updates['$USER/$name'] = {
+     // name: "",
+      "startTime": date.toLocal().toString()
+    };
+    //updates['$USER/$name'] = {"startTime": date};
+    FirebaseDatabase.instance.ref().update(updates);
     setState(() {
       this._displayForm = false;
     });
-    print(fields.length);
+  }
+
+  void _deleteField(String fieldName) {
+    FirebaseDatabase.instance.ref().child("$USER/$fieldName").remove();
+    setState(() {});
   }
 
   Future<DataSnapshot> getFieldNameFromDb() async {
-    DataSnapshot a = await FirebaseDatabase.instance.ref("user1").get();
+    DataSnapshot a = await FirebaseDatabase.instance.ref(USER).get();
     return a;
   }
 }

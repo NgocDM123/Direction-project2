@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'firebase_options.dart';
-import 'package:firebase_database/firebase_database.dart';
+import '../firebase_options.dart';
+
 import 'dart:math';
 
-import 'draw_graph/models/feature.dart';
-import 'simulated_model.dart';
+
+
 
 const double _thr =
     0.0224; // residual water content // lượng nước bị giữ lại trong đất mà cây ko hấp thụ được
@@ -33,7 +33,7 @@ class Field {
   double rgr; //relative growth rate (adjust by user)
   List<double> yields; // predicted by model
   String checkYieldDate; //
-  bool autoIrrigation;
+  bool autoIrrigation; //adjusted by user
 
   Field({
     required this.fieldName,
@@ -116,6 +116,12 @@ class Field {
     yields = map['yields'];
     checkYieldDate = map['checkYieldDate'];
     autoIrrigation = map['autoIrrigation'];
+  }
+
+
+  void setFieldName(String name) {
+    this.fieldName = name;
+
   }
 
   //todo predict yield of the field day by day

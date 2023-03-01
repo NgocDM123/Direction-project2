@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'field.dart';
+
+import '../model/field.dart';
 
 class FieldDetail extends StatefulWidget {
   final Field field;

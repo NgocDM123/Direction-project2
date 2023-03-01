@@ -19,7 +19,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:direction/page_welcome.dart';
 import 'package:direction/page_userData.dart';
 import 'package:direction/page_prognoses.dart';
-import 'package:direction/field_list.dart';
+import 'package:direction/ui/field_list.dart';
+
 //import 'package:direction/classFields.dart';
 var readFile = 0;
 
@@ -61,6 +62,7 @@ class MyApp extends StatelessWidget {
       //    {AppLocalizations.of(context).tab1},
       title: 'DIRECTION-cassava',
       locale: Locale('en'),
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         AppLocalizations.delegate, // Add this line
         GlobalMaterialLocalizations.delegate,

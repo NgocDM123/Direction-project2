@@ -10,14 +10,14 @@ class Styles {
   static final Color _textColorFaint = _hexToColor('999999');
   static final Color textColorBright = _hexToColor('FFFFFF');
   static final Color accentColor = _hexToColor('FF0000');
-  static final String _fontNameDefault = 'Muli';
+  static final String _fontNameDefault = 'Lora';
   static final navBarTitle = TextStyle(
     fontFamily: _fontNameDefault,
   );
   static final headerLarge = TextStyle(
     fontFamily: _fontNameDefault,
     fontSize: _textSizeLarge,
-    color: _textColorStrong,
+    color: Colors.white,
   );
   static final textDefault = TextStyle(
     fontFamily: _fontNameDefault,

@@ -105,6 +105,15 @@ flutter:
   #jp added image folder
   assets:
      - assets/images/
+  fonts:
+    - family: Muli
+      fonts:
+        - asset: assets/fonts/Muli-Light.ttf
+          weight: 300
+    - family: Lora
+      fonts:
+        - asset: assets/fonts/Lora-SemiBoldItalic.ttf
+
 
 flutter_intl:                                   # Add this line
   #enabled: true                                 # Add this line
