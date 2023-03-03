@@ -35,87 +35,37 @@ class MeasuredData {
         windSpeed = 0,
         Rn = 0;
 
-  Future<void> getRainFallFromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
-        .get();
-    var a = snapshot.child('${Constant.RAIN_FALL}');
-    this.rainFall = double.parse(a.value.toString());
-  }
-
-  Future<void> getHumidity30FromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
-        .get();
-    var a = snapshot.child('${Constant.HUMIDITY_30}');
-    this.humidity30 = double.parse(a.value.toString());
-  }
-
-  Future<void> getHumidity60FromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
-        .get();
-    var a = snapshot.child('${Constant.HUMIDITY_60}');
-    this.humidity60 = double.parse(a.value.toString());
-  }
-
-  Future<void> getTemperatureFromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
-        .get();
-    var a = snapshot.child('${Constant.TEMPERATURE}');
-    this.temperature = double.parse(a.value.toString());
-  }
-
-  Future<void> getSoilTemperatureFromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
-        .get();
-    var a = snapshot.child('${Constant.SOIL_TEMPERATURE}');
-    this.soilTemperature = double.parse(a.value.toString());
-  }
-
-  Future<void> getWindSpeedFromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
-        .get();
-    var a = snapshot.child('${Constant.WIND_SPEED}');
-    this.windSpeed = double.parse(a.value.toString());
-  }
-
-  Future<void> getRnFromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
-        .get();
-    var a = snapshot.child('${Constant.RN}');
-    this.Rn = double.parse(a.value.toString());
-  }
 
   Future<void> getDataFromDb(DateTime time) async {
+    DataSnapshot data;
     String dayPath =
         '${_format(time.year)}-${_format(time.month)}-${_format(time.day)}';
-    String timePath =
-        '${_format(time.hour)}:${_format(time.minute)}:${_format(time.second)}';
+    // String timePath =
+    //     '${_format(time.hour)}:${_format(time.minute)}:${_format(time.second)}';
 
     DataSnapshot snapshot = await FirebaseDatabase.instance
         .ref(
-            '${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}/$dayPath/$timePath')
+            '${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}/$dayPath')
         .get();
-    print(snapshot.value);
-    // var a = snapshot.child('${Constant.RAIN_FALL}');
-    // this.rainFall = double.parse(a.value.toString());
-    // a = snapshot.child('${Constant.HUMIDITY_30}');
-    // this.humidity30 = double.parse(a.value.toString());
-    // a = snapshot.child('${Constant.HUMIDITY_60}');
-    // this.humidity60 = double.parse(a.value.toString());
-    // a = snapshot.child('${Constant.TEMPERATURE}');
-    // this.temperature = double.parse(a.value.toString());
-    // a = snapshot.child('${Constant.SOIL_TEMPERATURE}');
-    // this.soilTemperature = double.parse(a.value.toString());
-    // a = snapshot.child('${Constant.WIND_SPEED}');
-    // this.windSpeed = double.parse(a.value.toString());
-    // a = snapshot.child('${Constant.RN}');
-    // this.Rn = double.parse(a.value.toString());
+    if (snapshot.exists) {
+      var length = snapshot.children.length;
+      data = snapshot.children.elementAt(length - 3);
+    } else {
+      snapshot = await FirebaseDatabase.instance
+          .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
+          .get();
+      var a = snapshot.children.last; // di den ngay muon nhat
+      var length = a.children.length;
+      var lastData = a.children.elementAt(length - 3);
+      data = lastData;
+    }
+    this.humidity30 =
+        double.parse(data.child('${Constant.HUMIDITY_30}').value.toString());
+    this.humidity60 =
+        double.parse(data.child('${Constant.HUMIDITY_60}').value.toString());
+    this.temperature =
+        double.parse(data.child('${Constant.TEMPERATURE}').value.toString());
+
   }
 
   String _format(int n) {

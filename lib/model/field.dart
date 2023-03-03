@@ -55,23 +55,23 @@ class Field {
   /// todo getData
   Future<void> getPotentialYieldFromDb() async {
     await customizedParameters.getPotentialYieldFromDb();
-  }
+  } //(done)
 
   Future<void> getILAFromDb() async {
     await customizedParameters.getILAFromDb();
-  }
+  } //(done)
 
   Future<void> getRGRFromDb() async {
     await customizedParameters.getRGRFromDb();
-  }
+  } //(done)
 
   Future<void> getAutoIrrigationFromDb() async {
     await customizedParameters.getAutoIrrigationFromDb();
-  }
+  } //(done)
 
   Future<void> getCustomizedParametersFromDb() async {
     await customizedParameters.getDataFromDb();
-  }
+  } //(done)
 
   Future<void> getMeasuredDataFromDb(DateTime time) async{
     await measuredData.getDataFromDb(time);

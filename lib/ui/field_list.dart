@@ -30,21 +30,21 @@ class _FieldListState extends State<FieldList> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            "Fields",
+            "Fields of ${Constant.USER}",
         ),
       ),
       body: Stack(
         children: [
-          _displayForm
-              ? Container(
-                  child: _addField(),
-                  height: 500,
-                  width: 500,
-                  alignment: Alignment.center,
-                )
-              : Container(),
           _renderFieldList(context),
           _renderButtonAdd(),
+          _displayForm
+              ? Container(
+            child: _addField(),
+            height: 500,
+            width: 500,
+            alignment: Alignment.center,
+          )
+              : Container(),
         ],
       ),
     );

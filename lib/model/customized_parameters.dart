@@ -65,7 +65,6 @@ class CustomizedParameters {
         .ref(
             '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}')
         .get();
-    //snapshot.child('${Constant.POTENTIAL_YIELD}');
     var a = snapshot.child('${Constant.POTENTIAL_YIELD}');
     this.potentialYield = double.parse(a.value.toString());
     a = snapshot.child('${Constant.ILA}');
@@ -80,12 +79,14 @@ class CustomizedParameters {
       this.autoIrrigation = false;
   }
 
-  Future<void> updatePotentialYieldToDb(double potentialYield) async {
-    DatabaseReference ref = FirebaseDatabase.instance
-        .ref('${Constant.USER}/${Constant.CUSTOMIZED_PARAMETERS}');
+  Future<void> updateDataToDb() async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref(
+        '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}');
     await ref.update({
-      "${Constant.POTENTIAL_YIELD}" : potentialYield,
+      "${Constant.POTENTIAL_YIELD}" : this.potentialYield,
+      "${Constant.ILA}" : this.iLA,
+      "${Constant.RGR}" : this.rgr,
+      "${Constant.AUTO_IRRIGATION}" : this.autoIrrigation
     });
-    this.potentialYield = potentialYield;
   }
 }

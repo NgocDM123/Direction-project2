@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../model/field.dart';
+import 'customized_parameters_page.dart';
+import '../styles.dart';
 
 class FieldDetail extends StatefulWidget {
   final Field field;
@@ -23,9 +25,7 @@ class _FieldDetailState extends State<FieldDetail> {
 
   @override
   Widget build(BuildContext context) {
-    String s = '2023-03-01 07:19:33';
-    DateTime time = DateTime.parse(s);
-    field.getDataFromDb(time);
+    field.getDataFromDb(DateTime.now().toLocal());
     return Scaffold(
       appBar: AppBar(
         title: Text(this.field.fieldName),
@@ -50,22 +50,40 @@ class _FieldDetailState extends State<FieldDetail> {
   }
 
   Widget _renderEditField() {
-   return Container(
-     child: ElevatedButton(
-       child: Text('Edit ${this.field.fieldName}'.toUpperCase()),
-       onPressed: () => null, // todo onPressed => show edit Screen
-     ),
-   );
+    return Container(
+      child: GestureDetector(
+        child: Container(
+          child: Text('Edit ${this.field.fieldName}',
+              style: Styles.locationTileTitleDark),
+          height: 60,
+          width: 500,
+          color: Colors.blue,
+          alignment: Alignment.center,
+        ),
+        onTap: () {
+          _navigateToCustomizedParametersPage(context, field);
+        },
+      ),
+      padding: EdgeInsets.only(left: 15, top: 10, right: 15, bottom: 15),
+    );
+  }
+
+  void _navigateToCustomizedParametersPage(BuildContext context, Field field) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (contex) => CustomizedParametersPage(this.field)));
   }
 
   Widget _renderPredictYield() {
     return Container(
       child: ElevatedButton(
-        child: Text('Predict Yield of ${this.field.fieldName} field'.toUpperCase()),
-        onPressed: () => null, // todo show the predicted yield
+        child: Text(
+            'Predict Yield of ${this.field.fieldName} field'.toUpperCase()),
+        onPressed: () => _navigateToCustomizedParametersPage(
+            context, field), // todo show the predicted yield
       ),
       height: 100,
-
     );
   }
 

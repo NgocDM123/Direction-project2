@@ -1,11 +1,15 @@
 class Constant {
   static const USER = 'testUser';
   static const TEST_USER = 'testUser';
-  static const CUSTOMIZED_PARAMETERS = 'customized parameters';
+  static const CUSTOMIZED_PARAMETERS = 'customized_parameters';
   static const POTENTIAL_YIELD = 'potentialYield';
+  static const POTENTIAL_YIELD_DISPLAY = 'Potential Yield';
   static const ILA = 'iLA';
+  static const ILA_DISPLAY = 'Initial leaf area';
   static const RGR = 'rgr';
+  static const RGR_DISPLAY = 'Relative growth rate';
   static const AUTO_IRRIGATION = 'autoIrrigation';
+  static const AUT0_IRRIGATION_DISPLAY = 'Auto irrigation';
   static const MEASURED_DATA = 'measured_data';
   static const RAIN_FALL = 'rainFall';
   static const HUMIDITY_30  ='humidity30';
