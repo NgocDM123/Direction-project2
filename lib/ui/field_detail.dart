@@ -23,6 +23,9 @@ class _FieldDetailState extends State<FieldDetail> {
 
   @override
   Widget build(BuildContext context) {
+    String s = '2023-03-01 07:19:33';
+    DateTime time = DateTime.parse(s);
+    field.getDataFromDb(time);
     return Scaffold(
       appBar: AppBar(
         title: Text(this.field.fieldName),

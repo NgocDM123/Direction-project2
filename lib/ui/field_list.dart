@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import '../model/field.dart';
 import '../styles.dart';
 import 'field_detail.dart';
+import '../constant.dart';
 
-const String USER = 'user1';
-const String TEST_USER = 'testUser';
+// const String USER = 'user1';
+// const String TEST_USER = 'testUser';
 
 class FieldList extends StatefulWidget {
   @override
@@ -151,10 +152,10 @@ class _FieldListState extends State<FieldList> {
   }
 
   void _createDefaultField(String name) {
-    final newPostKey = FirebaseDatabase.instance.ref().child(USER).push();
+    final newPostKey = FirebaseDatabase.instance.ref().child(Constant.USER).push();
     final Map<String, dynamic> updates = {};
     DateTime date = DateTime.now();
-    updates['$USER/$name'] = {
+    updates['${Constant.USER}/$name'] = {
      // name: "",
       "startTime": date.toLocal().toString()
     };
@@ -165,13 +166,16 @@ class _FieldListState extends State<FieldList> {
     });
   }
 
-  void _deleteField(String fieldName) {
-    FirebaseDatabase.instance.ref().child("$USER/$fieldName").remove();
-    setState(() {});
+  Future<void> _deleteField(String fieldName) async{
+    var a =  FirebaseDatabase.instance.ref("${Constant.USER}/${fieldName}");
+    a.remove();
+       setState(() {
+
+    });
   }
 
   Future<DataSnapshot> getFieldNameFromDb() async {
-    DataSnapshot a = await FirebaseDatabase.instance.ref(USER).get();
+    DataSnapshot a = await FirebaseDatabase.instance.ref(Constant.USER).get();
     return a;
   }
 }
