@@ -25,7 +25,7 @@ class _FieldDetailState extends State<FieldDetail> {
 
   @override
   Widget build(BuildContext context) {
-    field.getDataFromDb(DateTime.now().toLocal());
+    //field.getDataFromDb(DateTime.now().toLocal());
     return Scaffold(
       appBar: AppBar(
         title: Text(this.field.fieldName),
@@ -68,11 +68,13 @@ class _FieldDetailState extends State<FieldDetail> {
     );
   }
 
-  void _navigateToCustomizedParametersPage(BuildContext context, Field field) {
+  Future<void> _navigateToCustomizedParametersPage(
+      BuildContext context, Field field) async {
+    await field.customizedParameters.getDataFromDb();
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (contex) => CustomizedParametersPage(this.field)));
+            builder: (context) => CustomizedParametersPage(this.field)));
   }
 
   Widget _renderPredictYield() {

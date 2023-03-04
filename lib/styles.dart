@@ -10,7 +10,7 @@ class Styles {
   static final Color _textColorFaint = _hexToColor('999999');
   static final Color textColorBright = _hexToColor('FFFFFF');
   static final Color accentColor = _hexToColor('FF0000');
-  static final String _fontNameDefault = 'Lora';
+  static final String _fontNameDefault = 'Muli';
   static final navBarTitle = TextStyle(
     fontFamily: _fontNameDefault,
   );

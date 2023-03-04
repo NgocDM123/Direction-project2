@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../model/customized_parameters.dart';
 import '../model/field.dart';
 import '../constant.dart';
+import '../styles.dart';
 
 enum ParameterNames { potentialYield, iLA, rgr, autoIrrigation }
 
@@ -49,7 +50,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     result.add(_renderAutoIrrigationSwitch());
     return SingleChildScrollView(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: result,
       ),
@@ -58,59 +59,132 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
 
   Widget _renderRGRSlider() {
     return Container(
-      child: Slider(
-          value: this.field.customizedParameters.rgr,
-          onChanged: (double value) {
-            setState(() {
-              this.field.customizedParameters.rgr = value;
-            });
-          },
-          min: 0,
-          max: 0.04,
-          divisions: 100,
-          label: '${Constant.RGR_DISPLAY}'),
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.RGR_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.rgr}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.rgr,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.rgr = value;
+                });
+              },
+              min: 0,
+              max: 0.04,
+              divisions: 100,
+              label: '${Constant.RGR_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: 150,
+      padding: EdgeInsets.only(bottom: 20, top: 10),
     );
   }
 
   Widget _renderILASlider() {
     return Container(
-      child: Slider(
-          value: this.field.customizedParameters.iLA,
-          onChanged: (double value) {
-            setState(() {
-              this.field.customizedParameters.iLA = value;
-            });
-          },
-          min: 0,
-          max: 1000,
-          divisions: 100,
-          label: '${Constant.ILA}'), //ILA
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.ILA_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.iLA}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.iLA,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.iLA = value;
+                });
+              },
+              min: 0,
+              max: 1000,
+              divisions: 100,
+              label: '${Constant.ILA_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: 150,
+      padding: EdgeInsets.only(bottom: 20, top: 10), //ILA
     );
   }
 
   Widget _renderPotentialYield() {
     return Container(
-      child: Slider(
-          value: this.field.customizedParameters.potentialYield,
-          onChanged: (double value) {
-            setState(() {
-              this.field.customizedParameters.potentialYield = value;
-            });
-          },
-          min: 0,
-          max: 80000,
-          divisions: 100,
-          label: '${Constant.POTENTIAL_YIELD_DISPLAY}'), //Potential yield
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.POTENTIAL_YIELD_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.potentialYield}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.potentialYield,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.potentialYield = value;
+                });
+              },
+              min: 0,
+              max: 80000,
+              divisions: 100,
+              label: '${Constant.POTENTIAL_YIELD_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: 150,
+      padding: EdgeInsets.only(bottom: 20, top: 10), //ILA
     );
   }
 
   Widget _renderAutoIrrigationSwitch() {
     return Container(
+      height: 150,
       child: Stack(
         children: [
           Row(
             children: [
-              Text('${Constant.AUT0_IRRIGATION_DISPLAY}'),
+              Container(
+                child: Text(
+                  '${Constant.AUT0_IRRIGATION_DISPLAY}',
+                  style: Styles.locationTileTitleLight,
+                ),
+                padding: EdgeInsets.only(left: 23),
+              ),
               Container(
                 child: Switch(
                   value: this.field.customizedParameters.autoIrrigation,
@@ -122,7 +196,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
                   activeColor: Colors.blue,
                 ),
                 alignment: Alignment.center,
-                padding: EdgeInsets.only(left: 150),
+                //padding: EdgeInsets.only(left: 100),
               ),
             ],
           ),
@@ -146,15 +220,20 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
 
   Widget _renderConfirmButton() {
     return Container(
-      child: ElevatedButton(
-        child: Text('Change'),
-        onPressed: () => {
-          setState(() {
-            this.field.customizedParameters.updateDataToDb();
-          })
-        },
+      child: Stack(
+        children: [
+          ElevatedButton(
+            child: Text('Change'),
+            onPressed: () => {
+              setState(() {
+                this.field.customizedParameters.updateDataToDb();
+              })
+            },
+          ),
+        ],
       ),
       alignment: Alignment.bottomCenter,
+      padding: EdgeInsets.only(bottom: 20),
     );
   }
 }
