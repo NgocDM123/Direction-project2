@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../model/field.dart';
 import 'customized_parameters_page.dart';
+import 'detail_irrigation.dart';
 import '../styles.dart';
 
 class FieldDetail extends StatefulWidget {
@@ -25,7 +26,7 @@ class _FieldDetailState extends State<FieldDetail> {
 
   @override
   Widget build(BuildContext context) {
-    //field.getDataFromDb(DateTime.now().toLocal());
+    field.getDataFromDb(DateTime.now().toLocal());
     return Scaffold(
       appBar: AppBar(
         title: Text(this.field.fieldName),
@@ -89,13 +90,34 @@ class _FieldDetailState extends State<FieldDetail> {
     );
   }
 
+  // Widget _renderIrrigation() {
+  //   return Container(
+  //     child: ElevatedButton(
+  //       child: Text('Monitoring irrigation'.toUpperCase()),
+  //       onPressed: () => _navigateToDetailIrrigationPage(context, this.field), // todo show irrigation record
+  //     ),
+  //   );
+  // }
+
   Widget _renderIrrigation() {
     return Container(
-      child: ElevatedButton(
-        child: Text('Irrigation Record'.toUpperCase()),
-        onPressed: () => null, // todo show irrigation record
-      ),
-    );
+        padding: EdgeInsets.only(left: 15, top: 10, right: 15, bottom: 15),
+        child: GestureDetector(
+          child: Container(
+            child: Text('Monitoring irrigation',
+                style: Styles.locationTileTitleDark),
+            height: 60,
+            width: 500,
+            color: Colors.blue,
+            alignment: Alignment.center,
+          ),
+          onTap: () => _navigateToDetailIrrigationPage(context, this.field),
+        ));
+  }
+
+  void _navigateToDetailIrrigationPage(BuildContext context, Field field) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => DetailIrrigation(field)));
   }
 
   Widget _renderViewIrrigationState() {

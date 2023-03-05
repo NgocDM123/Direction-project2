@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 class Styles {
   static const _textSizeLarge = 22.0;
   static const _textSizeDefault = 16.0;
-  static const _textSizeSmall = 12.0;
+  static const _textSizeSmall = 14.0;
   static const horizontalPaddingDefault = 12.0;
   static final Color _textColorStrong = _hexToColor('000000');
   static final Color _textColorDefault = _hexToColor('000000');
   static final Color _textColorFaint = _hexToColor('999999');
   static final Color textColorBright = _hexToColor('FFFFFF');
   static final Color accentColor = _hexToColor('FF0000');
-  static final String _fontNameDefault = 'Muli';
+  static final Color blueColor = _hexToColor('3c556c');
+  static final String _fontNameDefault = 'Muli'
+      '';
   static final navBarTitle = TextStyle(
     fontFamily: _fontNameDefault,
   );
@@ -47,8 +49,14 @@ class Styles {
   );
   static final locationTileCaption = TextStyle(
     fontFamily: _fontNameDefault,
-    fontSize: _textSizeSmall,
+    fontSize: _textSizeDefault,
     color: _textColorFaint,
+  );
+
+  static final timeTitle = TextStyle(
+    fontFamily: _fontNameDefault,
+    fontSize: _textSizeDefault,
+    color: blueColor
   );
 
   static Color _hexToColor(String code) {

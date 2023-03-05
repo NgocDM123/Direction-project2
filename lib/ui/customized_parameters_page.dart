@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../model/customized_parameters.dart';
 import '../model/field.dart';
+import 'detail_irrigation.dart';
 import '../constant.dart';
 import '../styles.dart';
 
@@ -18,13 +19,19 @@ class CustomizedParametersPage extends StatefulWidget {
 
 class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
   final Field field;
+  bool timePicker = false;
 
-  //bool confirm = false;
   _CustomizedParametersPageState(this.field);
 
   @override
   void initState() {
     super.initState();
+  }
+
+  void _displayTimePicker() {
+    setState(() {
+      this.timePicker = true;
+    });
   }
 
   @override
@@ -200,22 +207,28 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               ),
             ],
           ),
-          this.field.customizedParameters.autoIrrigation
-              ? Container()
-              : Container(
-                  child: PopupMenuButton(
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        child: Text('Set irrigation time'),
-                        onTap: () => null,
-                      )
-                    ],
+          Container(
+            child: PopupMenuButton(
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: TextButton(
+                    child: Text('Go to the detail irrigation'),
+                    onPressed: () =>
+                        _navigateToDetailIrrigationPage(context, this.field),
                   ),
-                  alignment: Alignment.centerRight,
                 )
+              ],
+            ),
+            alignment: Alignment.centerRight,
+          )
         ],
       ),
     );
+  }
+
+  void _navigateToDetailIrrigationPage(BuildContext context, Field field) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => DetailIrrigation(field)));
   }
 
   Widget _renderConfirmButton() {

@@ -54,6 +54,7 @@ dependencies:
   firebase_core_platform_interface: ^4.5.1
   cached_network_image: ^3.2.3
   archive: ^3.1.6
+  lottie: ^2.2.0
   #rflutter_alert: ^2.0.2
 
 dev_dependencies:
@@ -105,6 +106,8 @@ flutter:
   #jp added image folder
   assets:
      - assets/images/
+     - assets/animations/water-drop.json
+     - assets/animations/energyshares-plant5.json
   fonts:
     - family: Muli
       fonts:

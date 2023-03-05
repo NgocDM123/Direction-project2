@@ -152,15 +152,19 @@ class _FieldListState extends State<FieldList> {
   }
 
   void _createDefaultField(String name) {
-    final newPostKey = FirebaseDatabase.instance.ref().child(Constant.USER).push();
+    Field newField = Field.newOne(name);
     final Map<String, dynamic> updates = {};
     DateTime date = DateTime.now();
     updates['${Constant.USER}/$name'] = {
-     // name: "",
-      "startTime": date.toLocal().toString()
+      "${Constant.START_TIME}": date.toLocal().toString(),
+      "${Constant.START_IRRIGATION}" : "",
+      "${Constant.END_IRRIGATION}" : "",
+      "${Constant.IRRIGATION_CHECK}" : "false",
+      "${Constant.MEASURED_DATA}" : "",
+      "${Constant.CUSTOMIZED_PARAMETERS}" : ""
     };
-    //updates['$USER/$name'] = {"startTime": date};
     FirebaseDatabase.instance.ref().update(updates);
+    newField.customizedParameters.updateDataToDb();
     setState(() {
       this._displayForm = false;
     });

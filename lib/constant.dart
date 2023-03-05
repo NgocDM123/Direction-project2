@@ -18,5 +18,9 @@ class Constant {
   static const SOIL_TEMPERATURE = 'soilTemperature';
   static const WIND_SPEED = 'windSpeed';
   static const RN = 'Rn';
+  static const IRRIGATION_CHECK = 'irrigationCheck';
+  static const START_IRRIGATION = 'startIrrigation';
+  static const END_IRRIGATION = 'endIrrigation';
+  static const START_TIME = 'startTime';
 
 }

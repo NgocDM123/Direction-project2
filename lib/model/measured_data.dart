@@ -35,7 +35,6 @@ class MeasuredData {
         windSpeed = 0,
         Rn = 0;
 
-
   Future<void> getDataFromDb(DateTime time) async {
     DataSnapshot data;
     String dayPath =
@@ -65,7 +64,21 @@ class MeasuredData {
         double.parse(data.child('${Constant.HUMIDITY_60}').value.toString());
     this.temperature =
         double.parse(data.child('${Constant.TEMPERATURE}').value.toString());
+    this.soilTemperature = double.parse(
+        data.child('${Constant.SOIL_TEMPERATURE}').value.toString());
+    this.rainFall =
+        double.parse(data.child('${Constant.RAIN_FALL}').value.toString());
+    this.windSpeed =
+        double.parse(data.child('${Constant.WIND_SPEED}').value.toString());
+    this.Rn = double.parse(data.child('${Constant.RN}').value.toString());
+  }
 
+  Future<void> writeDataToDb() async {
+    DatabaseReference ref = FirebaseDatabase.instance
+        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}');
+    await ref.update({
+
+    });
   }
 
   String _format(int n) {

@@ -18,39 +18,42 @@ const double _gamma = 0.067; //tra bang[15] trong bao cao do an
 class Field {
   String fieldName;
   int dAP; //day after plant
-  bool irrigation; //(determined from model)
+  bool irrigationCheck; //(determined from model or adjust by user)
   double amountOfIrrigation; // luong nuoc tuoi tieu (mm/day)
   List<double> yields; // predicted by model
   String checkYieldDate; //
   CustomizedParameters customizedParameters;
   MeasuredData measuredData;
+  String startIrrigation;
+  String endIrrigation;
 
-  Field({
-    required this.fieldName,
-    //required this.Vs,
-    required this.dAP,
-    required this.irrigation,
-    required this.amountOfIrrigation,
-    required this.yields,
-    required this.checkYieldDate,
-    required this.customizedParameters,
-    required this.measuredData,
-  });
+  Field(
+      this.fieldName,
+      this.dAP,
+      this.irrigationCheck,
+      this.amountOfIrrigation,
+      this.yields,
+      this.checkYieldDate,
+      this.customizedParameters,
+      this.measuredData,
+      this.startIrrigation,
+      this.endIrrigation);
 
   Field.newOne(String name)
       : fieldName = name,
         dAP = 0,
-        irrigation = false,
+        irrigationCheck = false,
         amountOfIrrigation = 0,
         yields = [0],
         checkYieldDate = "",
         customizedParameters = CustomizedParameters.newOne(name),
-        measuredData = MeasuredData.newOne(name);
+        measuredData = MeasuredData.newOne(name),
+        startIrrigation = '',
+        endIrrigation = '';
 
   void setFieldName(String name) {
     this.fieldName = name;
   }
-
 
   /// todo getData
   Future<void> getPotentialYieldFromDb() async {
@@ -73,13 +76,48 @@ class Field {
     await customizedParameters.getDataFromDb();
   } //(done)
 
-  Future<void> getMeasuredDataFromDb(DateTime time) async{
+  Future<void> getMeasuredDataFromDb(DateTime time) async {
     await measuredData.getDataFromDb(time);
+  }
+
+  Future<void> getIrrigationCheckFromDb() async {
+    DataSnapshot snapshot = await FirebaseDatabase.instance
+        .ref('${Constant.USER}/${this.fieldName}/${Constant.IRRIGATION_CHECK}')
+        .get();
+    var a = snapshot.value.toString().toLowerCase();
+    if (a == 'true')
+      this.irrigationCheck = true;
+    else
+      this.irrigationCheck = false;
+  }
+
+  Future<void> getGeneralDataFromDb() async {
+    DataSnapshot snapshot = await FirebaseDatabase.instance
+        .ref('${Constant.USER}/${this.fieldName}')
+        .get();
+    var a = snapshot.child('${Constant.IRRIGATION_CHECK}').value;
+    if (a.toString() == 'true')
+      this.irrigationCheck = true;
+    else
+      this.irrigationCheck = false;
+    a = snapshot.child('${Constant.START_IRRIGATION}').value;
+    this.startIrrigation = a.toString();
+    a = snapshot.child('${Constant.END_IRRIGATION}').value;
+    this.endIrrigation = a.toString();
   }
 
   Future<void> getDataFromDb(DateTime time) async {
     await getCustomizedParametersFromDb();
     await getMeasuredDataFromDb(time);
+  }
+
+  Future<void> updateGeneralDataToDb() async {
+    DatabaseReference ref =
+        FirebaseDatabase.instance.ref('${Constant.USER}/${this.fieldName}');
+    ref.update({
+      "${Constant.START_IRRIGATION}": this.startIrrigation,
+      "${Constant.END_IRRIGATION}": this.endIrrigation
+    });
   }
 
   //todo predict yield of the field day by day
