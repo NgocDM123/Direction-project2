@@ -87,7 +87,7 @@ class MyApp extends StatelessWidget {
                   children: [
                 TabBar(
                   tabs: [
-                    Tab(icon: Icon(Icons.agriculture)),
+                    Tab(icon: Icon(Icons.home)),
                     Tab(icon: Icon(Icons.table_chart_outlined)),
                     Tab(icon: Icon(Icons.analytics)),
                     Tab(icon: Icon(Icons.agriculture)),

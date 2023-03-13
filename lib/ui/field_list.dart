@@ -30,8 +30,17 @@ class _FieldListState extends State<FieldList> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            "Fields of ${Constant.USER}",
+          "Fields of ${Constant.USER}",
         ),
+        // flexibleSpace: Container(
+        //   decoration: BoxDecoration(
+        //     gradient: LinearGradient(
+        //       colors: [Colors.blue, Colors.white],
+        //       begin: Alignment.topLeft,
+        //       end: Alignment.bottomRight
+        //     )
+        //   ),
+        // ),
       ),
       body: Stack(
         children: [
@@ -39,11 +48,12 @@ class _FieldListState extends State<FieldList> {
           _renderButtonAdd(),
           _displayForm
               ? Container(
-            child: _addField(),
-            height: 500,
-            width: 500,
-            alignment: Alignment.center,
-          )
+                  child: _addField(),
+                  height: 500,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(left: 30, right: 30),
+                  color: Styles.blueColor.withOpacity(0.5),
+                )
               : Container(),
         ],
       ),
@@ -57,25 +67,28 @@ class _FieldListState extends State<FieldList> {
   }
 
   Widget _renderFieldList(BuildContext context) {
-    return FutureBuilder<DataSnapshot>(
-      future: this.getFieldNameFromDb(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          fields = [];
-          for (DataSnapshot child in snapshot.data!.children) {
-            Field f = Field.newOne(child.key!);
-            fields.add(f);
+    return Container(
+      child: FutureBuilder<DataSnapshot>(
+        future: this.getFieldNameFromDb(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            fields = [];
+            for (DataSnapshot child in snapshot.data!.children) {
+              Field f = Field.newOne(child.key!);
+              fields.add(f);
+            }
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            Center(
+              child: CircularProgressIndicator(),
+            );
           }
-        } else if (snapshot.connectionState == ConnectionState.waiting) {
-          Center(
-            child: CircularProgressIndicator(),
+          return ListView.builder(
+            itemCount: fields.length,
+            itemBuilder: _listFieldBuilder,
           );
-        }
-        return ListView.builder(
-          itemCount: fields.length,
-          itemBuilder: _listFieldBuilder,
-        );
-      },
+        },
+      ),
+      padding: EdgeInsets.only(top: 20.0),
     );
   }
 
@@ -84,14 +97,27 @@ class _FieldListState extends State<FieldList> {
     return GestureDetector(
         onTap: () => _navigateToFieldDetail(context, field),
         child: Container(
+          decoration: BoxDecoration(
+            borderRadius: new BorderRadius.circular(10),
+            //border: Border.all(color: Styles.blueColor),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 5.0,
+                offset: Offset(0, 2),
+                color: Styles.blueColor
+              ),
+            ]
+          ),
+          height: 70,
+          padding: EdgeInsets.fromLTRB(25.0, 15.0, 15.0, 15.0),
+          margin: EdgeInsets.only(top: 20.0, left: 15, right: 15),
           child: Stack(
             children: [
-              Text(
-                field.fieldName,
-                textAlign: TextAlign.left,
-                style: Styles.locationTileTitleDark
-              ),
+              Text(field.fieldName,
+                  textAlign: TextAlign.left, style: Styles.fieldName),
               Container(
+                alignment: Alignment.centerRight,
                 child: PopupMenuButton(
                   itemBuilder: (context) => [
                     PopupMenuItem(
@@ -101,15 +127,11 @@ class _FieldListState extends State<FieldList> {
                       },
                     )
                   ],
-                  color: Colors.white,
                 ),
-                alignment: Alignment.centerRight,
               ),
             ],
           ),
-          height: 70,
-          padding: EdgeInsets.fromLTRB(25.0, 15.0, 15.0, 15.0),
-          color: Colors.blue,
+
         ));
   }
 
@@ -133,49 +155,54 @@ class _FieldListState extends State<FieldList> {
   }
 
   Widget _addField() {
-    var result = TextField(
-      onSubmitted: (String text) {
-        if (text == '') {
-          setState(() {
-            this._displayForm = false;
-          });
-        } else
-          _createDefaultField(text);
-      },
-      autofocus: true,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Field name',
+
+    var result = Container(
+      child:  TextField(
+        onSubmitted: (String text) {
+          if (text == '') {
+            setState(() {
+              this._displayForm = false;
+            });
+          } else
+            _createDefaultField(text);
+        },
+        autofocus: true,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Field name',
+        ),
       ),
+      color: Colors.white,
+      height: 100,
+      alignment: Alignment.center,
+      padding: EdgeInsets.only(left: 10, right: 10),
+
     );
     return result;
   }
 
-  void _createDefaultField(String name) {
+  Future<void> _createDefaultField(String name) async{
     Field newField = Field.newOne(name);
     final Map<String, dynamic> updates = {};
-    DateTime date = DateTime.now();
     updates['${Constant.USER}/$name'] = {
-      "${Constant.START_TIME}": date.toLocal().toString(),
-      "${Constant.START_IRRIGATION}" : "",
-      "${Constant.END_IRRIGATION}" : "",
-      "${Constant.IRRIGATION_CHECK}" : "false",
-      "${Constant.MEASURED_DATA}" : "",
-      "${Constant.CUSTOMIZED_PARAMETERS}" : ""
+      "${Constant.START_TIME}": newField.startTime,
+      "${Constant.START_IRRIGATION}": "",
+      "${Constant.END_IRRIGATION}": "",
+      "${Constant.IRRIGATION_CHECK}": "false",
+      "${Constant.MEASURED_DATA}": "",
+      "${Constant.CUSTOMIZED_PARAMETERS}": ""
     };
     FirebaseDatabase.instance.ref().update(updates);
-    newField.customizedParameters.updateDataToDb();
+    await newField.customizedParameters.updateDataToDb();
     setState(() {
       this._displayForm = false;
     });
   }
 
-  Future<void> _deleteField(String fieldName) async{
-    var a =  FirebaseDatabase.instance.ref("${Constant.USER}/${fieldName}");
+  Future<void> _deleteField(String fieldName) async {
+    var a = FirebaseDatabase.instance.ref("${Constant.USER}/${fieldName}");
     a.remove();
-       setState(() {
-
-    });
+    setState(() {});
   }
 
   Future<DataSnapshot> getFieldNameFromDb() async {

@@ -48,7 +48,13 @@ class MeasuredData {
         .get();
     if (snapshot.exists) {
       var length = snapshot.children.length;
-      data = snapshot.children.elementAt(length - 3);
+      if(length > 3) {
+        data = snapshot.children.elementAt(length - 3);
+      }
+      else {
+        data = snapshot.children.elementAt(0);
+      }
+
     } else {
       snapshot = await FirebaseDatabase.instance
           .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
@@ -73,13 +79,34 @@ class MeasuredData {
     this.Rn = double.parse(data.child('${Constant.RN}').value.toString());
   }
 
+
+
   Future<void> writeDataToDb() async {
     DatabaseReference ref = FirebaseDatabase.instance
         .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}');
-    await ref.update({
-
-    });
+    await ref.update({});
   }
+
+  Future<List<double>> getAllRainfallFromDb() async {
+    List<double> rainFall = [];
+    DataSnapshot snapshot = await FirebaseDatabase.instance
+        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
+        .get();
+    for (DataSnapshot snapshotChild in snapshot.children) {
+      for (DataSnapshot child in snapshotChild.children) {
+        var value =
+            double.parse(child.child('${Constant.RAIN_FALL}').value.toString());
+        rainFall.add(value);
+      }
+    }
+   // print (rainFall);
+    return rainFall;
+  }
+
+
+
+
+
 
   String _format(int n) {
     if (n < 10)

@@ -1,3 +1,4 @@
+import 'package:direction/ui/predicted_yield_page.dart';
 import 'package:flutter/material.dart';
 
 import '../model/field.dart';
@@ -37,10 +38,10 @@ class _FieldDetailState extends State<FieldDetail> {
 
   Widget _renderBody(BuildContext context, Field field) {
     var result = <Widget>[];
-    result.add(_renderEditField());
-    result.add(_renderPredictYield());
+    //result.add(_renderRainFall());
+    result.add(_customizeContainer(_renderPredictYield()));
     result.add(_renderIrrigation());
-    result.add(_renderViewIrrigationState());
+    result.add(_renderEditField());
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -50,14 +51,31 @@ class _FieldDetailState extends State<FieldDetail> {
     );
   }
 
+  Widget _customizeContainer(Widget child) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: new BorderRadius.circular(10),
+          //border: Border.all(color: Styles.blueColor),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                blurRadius: 5.0, offset: Offset(0, 2), color: Styles.blueColor),
+          ]),
+      height: 70,
+      padding: EdgeInsets.fromLTRB(25.0, 15.0, 15.0, 15.0),
+      margin: EdgeInsets.only(top: 20.0, left: 15, right: 15),
+      child: child,
+    );
+  }
+
   Widget _renderEditField() {
     return Container(
       child: GestureDetector(
         child: Container(
           child: Text('Edit ${this.field.fieldName}',
               style: Styles.locationTileTitleDark),
-          height: 60,
-          width: 500,
+          // height: 60,
+          // width: 500,
           color: Colors.blue,
           alignment: Alignment.center,
         ),
@@ -78,26 +96,23 @@ class _FieldDetailState extends State<FieldDetail> {
             builder: (context) => CustomizedParametersPage(this.field)));
   }
 
-  Widget _renderPredictYield() {
-    return Container(
-      child: ElevatedButton(
-        child: Text(
-            'Predict Yield of ${this.field.fieldName} field'.toUpperCase()),
-        onPressed: () => _navigateToCustomizedParametersPage(
-            context, field), // todo show the predicted yield
-      ),
-      height: 100,
-    );
+  void _navigateToPredictedYieldPage(BuildContext context, Field field) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PredictedYieldPage(field)));
   }
 
-  // Widget _renderIrrigation() {
-  //   return Container(
-  //     child: ElevatedButton(
-  //       child: Text('Monitoring irrigation'.toUpperCase()),
-  //       onPressed: () => _navigateToDetailIrrigationPage(context, this.field), // todo show irrigation record
-  //     ),
-  //   );
-  // }
+  Widget _renderPredictYield() {
+    return Container(
+        child: ElevatedButton(
+      style: ButtonStyle(),
+      child:
+          Text('Predict Yield of ${this.field.fieldName} field'.toUpperCase()),
+      onPressed: () => _navigateToPredictedYieldPage(context, this.field), // todo show the predicted yield
+    ));
+    //height: 100,
+  }
 
   Widget _renderIrrigation() {
     return Container(
@@ -120,7 +135,17 @@ class _FieldDetailState extends State<FieldDetail> {
         MaterialPageRoute(builder: (context) => DetailIrrigation(field)));
   }
 
-  Widget _renderViewIrrigationState() {
-    return Container(); // todo show auto or manual irrigation
+  Widget _renderRainFall() {
+    var result;
+    this.field.measuredData.getAllRainfallFromDb().then((value) {
+      result = value;
+      print('------------------$result');
+    });
+    return Container(
+      child: ElevatedButton(
+        child: Text('Rain Fall'),
+        onPressed: () => null,
+      ),
+    );
   }
 }

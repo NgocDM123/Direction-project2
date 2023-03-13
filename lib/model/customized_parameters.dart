@@ -7,16 +7,18 @@ class CustomizedParameters {
   double potentialYield;
   double iLA;
   double rgr;
+  double fieldCapacity;
   bool autoIrrigation;
 
   CustomizedParameters(this.fieldName, this.potentialYield, this.iLA, this.rgr,
-      this.autoIrrigation);
+      this.fieldCapacity, this.autoIrrigation);
 
   CustomizedParameters.newOne(name)
       : this.fieldName = name,
         this.potentialYield = 30000,
         this.iLA = 100,
         this.rgr = 0.025,
+        this.fieldCapacity = 0,
         this.autoIrrigation = true;
 
   Future<void> getPotentialYieldFromDb() async {
@@ -83,10 +85,11 @@ class CustomizedParameters {
     DatabaseReference ref = FirebaseDatabase.instance.ref(
         '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}');
     await ref.update({
-      "${Constant.POTENTIAL_YIELD}" : this.potentialYield,
-      "${Constant.ILA}" : this.iLA,
-      "${Constant.RGR}" : this.rgr,
-      "${Constant.AUTO_IRRIGATION}" : this.autoIrrigation
+      "${Constant.POTENTIAL_YIELD}": this.potentialYield,
+      "${Constant.ILA}": this.iLA,
+      "${Constant.RGR}": this.rgr,
+      "${Constant.FIELD_CAPACITY}" : this.fieldCapacity,
+      "${Constant.AUTO_IRRIGATION}": this.autoIrrigation
     });
   }
 }

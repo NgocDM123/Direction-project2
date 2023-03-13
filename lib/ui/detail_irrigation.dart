@@ -26,6 +26,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
   @override
   void initState() {
     super.initState();
+    this.field.getGeneralDataFromDb();
   }
 
   @override
@@ -38,6 +39,29 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
       body: _renderBody(),
     );
   }
+
+  // Widget build(BuildContext context) {
+  //   //this.field.getGeneralDataFromDb();
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Text('${_appBarText()}'),
+  //     ),
+  //     body: FutureBuilder(
+  //       future: this.field.getGeneralDataFromDb(),
+  //     ),
+  //   );
+  // }
+
+  // Future<Widget> _build() async{
+  //   await this.field.getGeneralDataFromDb();
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Text('${_appBarText()}'),
+  //     ),
+  //     body: _renderBody(),
+  //   );
+  // }
+
 
   String _appBarText() {
     String s = '';
@@ -69,9 +93,8 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
             padding: const EdgeInsets.all(3.0),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: new BorderRadius.circular(25),
-              border: Border.all(color: Styles.blueColor)
-            ),
+                borderRadius: new BorderRadius.circular(25),
+                border: Border.all(color: Styles.blueColor)),
           ),
           Container(
             child: Text(
@@ -83,8 +106,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 borderRadius: new BorderRadius.circular(25),
-                border: Border.all(color: Styles.blueColor)
-            ),
+                border: Border.all(color: Styles.blueColor)),
           ),
           Container(
               child: Center(
@@ -118,23 +140,23 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
             height: 300,
           ),
           Container(
-            padding: EdgeInsets.only(top: 70),
+              padding: EdgeInsets.only(top: 70),
               child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              OutlinedButton(
-                child: Text(
-                  'Choose irrigation start time',
-                  style: Styles.timeTitle,
-                ),
-                onPressed: () => _displayTimeDialog(true),
-              ),
-              Text(
-                'Start time: ${this.selectedStartTime}',
-                style: Styles.timeTitle,
-              )
-            ],
-          )),
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  OutlinedButton(
+                    child: Text(
+                      'Choose irrigation start time',
+                      style: Styles.timeTitle,
+                    ),
+                    onPressed: () => _displayTimeDialog(true),
+                  ),
+                  Text(
+                    'Start time: ${this.selectedStartTime}',
+                    style: Styles.timeTitle,
+                  )
+                ],
+              )),
           Container(
               child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -168,7 +190,8 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
       TimeOfDay endT;
       setState(() {
         if (start) {
-          assert(this.selectedStartTime.compareTo(TimeOfDay.now().toString()) < 0);
+          assert(
+              this.selectedStartTime.compareTo(TimeOfDay.now().toString()) < 0);
           this.selectedStartTime = time.format(context);
           this.setStartTime = true;
         } else {

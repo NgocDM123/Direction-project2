@@ -22,5 +22,7 @@ class Constant {
   static const START_IRRIGATION = 'startIrrigation';
   static const END_IRRIGATION = 'endIrrigation';
   static const START_TIME = 'startTime';
+  static const FIELD_CAPACITY = 'fieldCapacity';
+  static const FIELD_CAPACITY_DISPLAY = 'Field capacity';
 
 }

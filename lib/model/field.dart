@@ -1,3 +1,4 @@
+import 'package:archive/archive.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../firebase_options.dart';
@@ -18,6 +19,7 @@ const double _gamma = 0.067; //tra bang[15] trong bao cao do an
 class Field {
   String fieldName;
   int dAP; //day after plant
+  String startTime;
   bool irrigationCheck; //(determined from model or adjust by user)
   double amountOfIrrigation; // luong nuoc tuoi tieu (mm/day)
   List<double> yields; // predicted by model
@@ -29,6 +31,7 @@ class Field {
 
   Field(
       this.fieldName,
+      this.startTime,
       this.dAP,
       this.irrigationCheck,
       this.amountOfIrrigation,
@@ -41,6 +44,7 @@ class Field {
 
   Field.newOne(String name)
       : fieldName = name,
+        startTime = DateTime.now().toString(),
         dAP = 0,
         irrigationCheck = false,
         amountOfIrrigation = 0,
@@ -104,9 +108,11 @@ class Field {
     this.startIrrigation = a.toString();
     a = snapshot.child('${Constant.END_IRRIGATION}').value;
     this.endIrrigation = a.toString();
+    a = snapshot.child('${Constant.START_TIME}').value;
   }
 
   Future<void> getDataFromDb(DateTime time) async {
+    await getGeneralDataFromDb();
     await getCustomizedParametersFromDb();
     await getMeasuredDataFromDb(time);
   }
@@ -121,53 +127,109 @@ class Field {
   }
 
   //todo predict yield of the field day by day
-  Future<double> predictYield() async {
-    if (this.yields.length < 1) {
-      this.yields[0] = this.customizedParameters.iLA;
+  Future<List<double>> predictYield() async {
+    List<double> yields = [];
+    yields.add(this.customizedParameters.iLA);
+    DataSnapshot snapshot = await FirebaseDatabase.instance
+        .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
+        .get();
+    int length = snapshot.children.length - 2; //sum of day
+    for (var index = 0; index < snapshot.children.length - 1; index++) {
+      //1 child = 1 day
+      DataSnapshot child = snapshot.children.elementAt(index);
+
+      List<MeasuredData> data = [];
+      DataSnapshot value;
+      List<int> time = [
+        0,
+        (length / 3).round(),
+        2 * (length / 3).round(),
+        length - 1
+      ]; // 4 times in a day
+
+      // get data for 4 times in a day
+      for (var i = 0; i < time.length; i++) {
+        data.add(MeasuredData.newOne(''));
+        value = child.children.elementAt(time[i]); // 1 value = 1 time
+        data.elementAt(i).humidity30 = double.parse(
+            value.child('${Constant.HUMIDITY_30}').value.toString());
+        data.elementAt(i).humidity60 = double.parse(
+            value.child('${Constant.HUMIDITY_60}').value.toString());
+        data.elementAt(i).temperature = double.parse(
+            value.child('${Constant.TEMPERATURE}').value.toString());
+        data.elementAt(i).soilTemperature = double.parse(
+            value.child('${Constant.SOIL_TEMPERATURE}').value.toString());
+        data.elementAt(i).windSpeed = double.parse(
+            value.child('${Constant.WIND_SPEED}').value.toString());
+        // data.elementAt(i).Rn =
+        //     double.parse(value.child('${Constant.RN}').value.toString());
+      }
+
+      List<double> k = []; // coefficients of the equation
+      double tmp = _ode(yields.elementAt(index), data.elementAt(0), index) * 1 / 6;
+      k.add(tmp); //k1
+      tmp = _ode(
+              yields.elementAt(index) + k.elementAt(0) / 2, data.elementAt(1), index) *
+          2 /
+          6;
+      k.add(tmp); //k2
+      tmp = _ode(
+              yields.elementAt(index) + k.elementAt(1) / 2, data.elementAt(2), index) *
+          2 /
+          6;
+      k.add(tmp); //k3
+      tmp = _ode(yields.elementAt(index) + k.elementAt(2), data.elementAt(3), index) *
+          1 /
+          6;
+      k.add(tmp); //k4
+
+      tmp = yields.elementAt(index);
+      for (var kIndex = 0; kIndex < 4; kIndex++) {
+        tmp += k.elementAt(kIndex);
+      }
+
+      yields.add(tmp);
     }
 
-    List<double> k; // coefficients of the equation
-    var y = this.yields[this.yields.length - 1];
-
-    var nextY;
-    return nextY;
+    print("========================$yields");
+    return yields;
   }
 
   //todo calculate the yield for each time of day
-  double ode(double yn) {
+  double _ode(double yn, MeasuredData measuredData, int dAP) {
     var yn1 = yn;
     //todo tinh ET0
-    var T = this.measuredData.temperature;
+    var T = measuredData.temperature;
     var delta = 0.6108 * exp(17.27 * T / (T + 237.3));
     delta *= (4098 /
         ((T + 237.3) * (T + 237.3))); // cong thuc tra bang [15] trong report
-    var G = this.measuredData.soilTemperature;
-    var u2 = this.measuredData.windSpeed;
+    var G = measuredData.soilTemperature;
+    var u2 = measuredData.windSpeed;
     var es = 4.719;
 
     ///? tuong ung voi nhiet do khoang 30 C
     var ea = 4.719;
 
     /// ?
-    var ET0 = (0.408 * delta * (this.measuredData.Rn - G) +
+    var ET0 = (0.408 * delta * (measuredData.Rn - G) +
             _gamma * (900 / (T + 273) * u2 * (es - ea))) /
         (delta + _gamma * (1 + 0.34 * u2));
 
     //todo calculate Kc
     var Kc =
-        0.3 + 0.5 * max(this.dAP / 45, 1); // he so cay trong tai ngay thu dAP
+        0.3 + 0.5 * max(dAP / 45, 1); // he so cay trong tai ngay thu dAP
 
     //todo calculate ETc
     var Vs = _depth * _appi * 1000; //cm3, the tich dat
-    var swl30 = this.measuredData.humidity30 * Vs;
-    var swl60 = this.measuredData.humidity60 * Vs;
+    var swl30 = measuredData.humidity30 * Vs;
+    var swl60 = measuredData.humidity60 * Vs;
     var swl = swl30 + swl60;
     var ETc = ET0 * Kc; // luong thoat hoi nuoc thuc te
 
     //todo calculate swc
-    var swc =
-        (this.amountOfIrrigation + this.measuredData.rainFall + swl - ETc) /
-            Vs; // soil water content
+    var swc = (amountOfIrrigation + measuredData.rainFall + swl - ETc) /
+        Vs; // soil water content
+    swc = this.customizedParameters.fieldCapacity * Vs; // soil water content base on field capacity
     var waterStress = max(0, 1 - exp((swc - _thr) * (-40)));
     //todo calculate yn1
     yn1 = this.customizedParameters.rgr *
@@ -176,4 +238,12 @@ class Field {
         waterStress;
     return yn1;
   }
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
+  }
+
+
 }

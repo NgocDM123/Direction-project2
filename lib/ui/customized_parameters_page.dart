@@ -54,10 +54,11 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     result.add(_renderRGRSlider());
     result.add(_renderILASlider());
     result.add(_renderPotentialYield());
+    result.add(_renderFieldCapacitySlider());
     result.add(_renderAutoIrrigationSwitch());
     return SingleChildScrollView(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: result,
       ),
@@ -223,6 +224,57 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
           )
         ],
       ),
+    );
+  }
+
+  Widget _renderSlider(CustomizedParameters customizedParameters) {
+    return ListView.builder(
+      itemCount: 4,
+        itemBuilder: _listViewItemBuilder
+    );
+  }
+
+  Widget _listViewItemBuilder (BuildContext context, int index) {
+    return Container(
+
+    );
+  }
+
+  Widget _renderFieldCapacitySlider () {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.FIELD_CAPACITY_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.fieldCapacity}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.fieldCapacity,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.fieldCapacity = value;
+                });
+              },
+              min: 0,
+              max: 100,
+              divisions: 100,
+              label: '${Constant.FIELD_CAPACITY_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: 150,
+      padding: EdgeInsets.only(bottom: 20, top: 10),
     );
   }
 
