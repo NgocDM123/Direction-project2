@@ -4,50 +4,45 @@ import '../constant.dart';
 
 class CustomizedParameters {
   String fieldName;
-  double potentialYield;
-  double iLA;
-  double rgr;
   double fieldCapacity;
   bool autoIrrigation;
+  double irrigationDuration; //(hour)
+  double dripRate; //(l/hole/hour)
+  double distanceBetweenHoles; //(cm)
+  double distanceBetweenRows; //cm
+  double scaleRain; //(%)
+  double fertilizationLevel;
 
-  CustomizedParameters(this.fieldName, this.potentialYield, this.iLA, this.rgr,
-      this.fieldCapacity, this.autoIrrigation);
+  CustomizedParameters(
+      this.fieldName,
+      this.fieldCapacity,
+      this.autoIrrigation,
+      this.irrigationDuration,
+      this.dripRate,
+      this.distanceBetweenHoles,
+      this.distanceBetweenRows,
+      this.scaleRain,
+      this.fertilizationLevel); //(%)
 
   CustomizedParameters.newOne(name)
       : this.fieldName = name,
-        this.potentialYield = 30000,
-        this.iLA = 100,
-        this.rgr = 0.025,
         this.fieldCapacity = 0,
+        this.distanceBetweenHoles = 30,
+        this.irrigationDuration = 7,
+        this.distanceBetweenRows = 100,
+        this.dripRate = 1.6,
+        this.fertilizationLevel = 100,
+        this.scaleRain = 100,
         this.autoIrrigation = true;
 
-  Future<void> getPotentialYieldFromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref(
-            '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}')
-        .get();
-    //snapshot.child('${Constant.POTENTIAL_YIELD}');
-    var a = snapshot.child('${Constant.POTENTIAL_YIELD}');
-    this.potentialYield = double.parse(a.value.toString());
-  }
-
-  Future<void> getILAFromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref(
-            '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}')
-        .get();
-    var a = snapshot.child('${Constant.ILA}');
-    this.iLA = double.parse(a.value.toString());
-  }
-
-  Future<void> getRGRFromDb() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref(
-            '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}')
-        .get();
-    var a = snapshot.child('${Constant.RGR}');
-    this.rgr = double.parse(a.value.toString());
-  }
+  // Future<void> getRGRFromDb() async {
+  //   DataSnapshot snapshot = await FirebaseDatabase.instance
+  //       .ref(
+  //           '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}')
+  //       .get();
+  //   var a = snapshot.child('${Constant.RGR}');
+  //   this.rgr = double.parse(a.value.toString());
+  // }
 
   Future<void> getAutoIrrigationFromDb() async {
     DataSnapshot snapshot = await FirebaseDatabase.instance
@@ -67,28 +62,40 @@ class CustomizedParameters {
         .ref(
             '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}')
         .get();
-    var a = snapshot.child('${Constant.POTENTIAL_YIELD}');
-    this.potentialYield = double.parse(a.value.toString());
-    a = snapshot.child('${Constant.ILA}');
-    this.iLA = double.parse(a.value.toString());
-    a = snapshot.child('${Constant.RGR}');
-    this.rgr = double.parse(a.value.toString());
-    a = snapshot.child('${Constant.AUTO_IRRIGATION}');
+    var a = snapshot.child('${Constant.AUTO_IRRIGATION}');
     String s = a.value.toString().toLowerCase();
     if (s == 'true')
       this.autoIrrigation = true;
     else
       this.autoIrrigation = false;
+    a = snapshot.child('${Constant.FIELD_CAPACITY}');
+    this.fieldCapacity = double.parse(a.value.toString());
+    a = snapshot.child('${Constant.IRRIGATION_DURATION}');
+    this.irrigationDuration = double.parse(a.value.toString());
+    a = snapshot.child('${Constant.DRIP_RATE}');
+    this.dripRate = double.parse(a.value.toString());
+    a = snapshot.child('${Constant.DISTANCE_BETWEEN_ROWS}');
+    this.distanceBetweenRows = double.parse(a.value.toString());
+    a = snapshot.child('${Constant.DISTANCE_BETWEEN_HOLES}');
+    this.distanceBetweenHoles = double.parse(a.value.toString());
+    a = snapshot.child('${Constant.SCALE_RAIN}');
+    this.scaleRain = double.parse(a.value.toString());
+    a = snapshot.child('${Constant.FERTILIZATION_LEVEL}');
+    this.fertilizationLevel = double.parse(a.value.toString());
+
   }
 
   Future<void> updateDataToDb() async {
     DatabaseReference ref = FirebaseDatabase.instance.ref(
         '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}');
     await ref.update({
-      "${Constant.POTENTIAL_YIELD}": this.potentialYield,
-      "${Constant.ILA}": this.iLA,
-      "${Constant.RGR}": this.rgr,
-      "${Constant.FIELD_CAPACITY}" : this.fieldCapacity,
+      "${Constant.FIELD_CAPACITY}": this.fieldCapacity,
+      "${Constant.IRRIGATION_DURATION}": this.irrigationDuration,
+      "${Constant.DRIP_RATE}": this.dripRate,
+      "${Constant.DISTANCE_BETWEEN_HOLES}": this.distanceBetweenHoles,
+      "${Constant.DISTANCE_BETWEEN_ROWS}": this.distanceBetweenRows,
+      "${Constant.SCALE_RAIN}": this.scaleRain,
+      "${Constant.FERTILIZATION_LEVEL}": this.fertilizationLevel,
       "${Constant.AUTO_IRRIGATION}": this.autoIrrigation
     });
   }

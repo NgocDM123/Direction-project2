@@ -7,6 +7,7 @@ import '../constant.dart';
 import '../styles.dart';
 
 enum ParameterNames { potentialYield, iLA, rgr, autoIrrigation }
+const double _sliderHeight = 175;
 
 class CustomizedParametersPage extends StatefulWidget {
   final Field field;
@@ -51,133 +52,136 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
 
   Widget _renderParameters() {
     List<Widget> result = [];
-    result.add(_renderRGRSlider());
-    result.add(_renderILASlider());
-    result.add(_renderPotentialYield());
+    result.add(_renderIrrigationDurationSlider());
+    result.add(_renderDripRateSlider());
+    result.add(_renderDistanceBetweenHolesSlider());
+    result.add(_renderDistanceBetweenRowsSlider());
     result.add(_renderFieldCapacitySlider());
+    result.add(_renderScaleRainSlider());
+    result.add(_renderFertilizerLevelSlider());
     result.add(_renderAutoIrrigationSwitch());
     return SingleChildScrollView(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: result,
       ),
     );
   }
 
-  Widget _renderRGRSlider() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            child: Text(
-              '${Constant.RGR_DISPLAY}',
-              style: Styles.locationTileTitleLight,
-            ),
-            padding: EdgeInsets.only(left: 23),
-          ),
-          Container(
-            child: Text(
-              '${this.field.customizedParameters.rgr}',
-              style: Styles.locationTileTitleLight,
-            ),
-            padding: EdgeInsets.only(left: 23),
-          ),
-          Slider(
-              value: this.field.customizedParameters.rgr,
-              onChanged: (double value) {
-                setState(() {
-                  this.field.customizedParameters.rgr = value;
-                });
-              },
-              min: 0,
-              max: 0.04,
-              divisions: 100,
-              label: '${Constant.RGR_DISPLAY}'),
-        ],
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-      ),
-      height: 150,
-      padding: EdgeInsets.only(bottom: 20, top: 10),
-    );
-  }
+  // Widget _renderRGRSlider() {
+  //   return Container(
+  //     child: Column(
+  //       children: [
+  //         Container(
+  //           child: Text(
+  //             '${Constant.RGR_DISPLAY}',
+  //             style: Styles.locationTileTitleLight,
+  //           ),
+  //           padding: EdgeInsets.only(left: 23),
+  //         ),
+  //         Container(
+  //           child: Text(
+  //             '${this.field.customizedParameters.rgr}',
+  //             style: Styles.locationTileTitleLight,
+  //           ),
+  //           padding: EdgeInsets.only(left: 23),
+  //         ),
+  //         Slider(
+  //             value: this.field.customizedParameters.rgr,
+  //             onChanged: (double value) {
+  //               setState(() {
+  //                 this.field.customizedParameters.rgr = value;
+  //               });
+  //             },
+  //             min: 0,
+  //             max: 0.04,
+  //             divisions: 100,
+  //             label: '${Constant.RGR_DISPLAY}'),
+  //       ],
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //     ),
+  //     height: 150,
+  //     padding: EdgeInsets.only(bottom: 20, top: 10),
+  //   );
+  // }
 
-  Widget _renderILASlider() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            child: Text(
-              '${Constant.ILA_DISPLAY}',
-              style: Styles.locationTileTitleLight,
-            ),
-            padding: EdgeInsets.only(left: 23),
-          ),
-          Container(
-            child: Text(
-              '${this.field.customizedParameters.iLA}',
-              style: Styles.locationTileTitleLight,
-            ),
-            padding: EdgeInsets.only(left: 23),
-          ),
-          Slider(
-              value: this.field.customizedParameters.iLA,
-              onChanged: (double value) {
-                setState(() {
-                  this.field.customizedParameters.iLA = value;
-                });
-              },
-              min: 0,
-              max: 1000,
-              divisions: 100,
-              label: '${Constant.ILA_DISPLAY}'),
-        ],
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-      ),
-      height: 150,
-      padding: EdgeInsets.only(bottom: 20, top: 10), //ILA
-    );
-  }
+  // Widget _renderILASlider() {
+  //   return Container(
+  //     child: Column(
+  //       children: [
+  //         Container(
+  //           child: Text(
+  //             '${Constant.ILA_DISPLAY}',
+  //             style: Styles.locationTileTitleLight,
+  //           ),
+  //           padding: EdgeInsets.only(left: 23),
+  //         ),
+  //         Container(
+  //           child: Text(
+  //             '${this.field.customizedParameters.iLA}',
+  //             style: Styles.locationTileTitleLight,
+  //           ),
+  //           padding: EdgeInsets.only(left: 23),
+  //         ),
+  //         Slider(
+  //             value: this.field.customizedParameters.iLA,
+  //             onChanged: (double value) {
+  //               setState(() {
+  //                 this.field.customizedParameters.iLA = value;
+  //               });
+  //             },
+  //             min: 0,
+  //             max: 1000,
+  //             divisions: 100,
+  //             label: '${Constant.ILA_DISPLAY}'),
+  //       ],
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //     ),
+  //     height: 150,
+  //     padding: EdgeInsets.only(bottom: 20, top: 10), //ILA
+  //   );
+  // }
 
-  Widget _renderPotentialYield() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            child: Text(
-              '${Constant.POTENTIAL_YIELD_DISPLAY}',
-              style: Styles.locationTileTitleLight,
-            ),
-            padding: EdgeInsets.only(left: 23),
-          ),
-          Container(
-            child: Text(
-              '${this.field.customizedParameters.potentialYield}',
-              style: Styles.locationTileTitleLight,
-            ),
-            padding: EdgeInsets.only(left: 23),
-          ),
-          Slider(
-              value: this.field.customizedParameters.potentialYield,
-              onChanged: (double value) {
-                setState(() {
-                  this.field.customizedParameters.potentialYield = value;
-                });
-              },
-              min: 0,
-              max: 80000,
-              divisions: 100,
-              label: '${Constant.POTENTIAL_YIELD_DISPLAY}'),
-        ],
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-      ),
-      height: 150,
-      padding: EdgeInsets.only(bottom: 20, top: 10), //ILA
-    );
-  }
+  // Widget _renderPotentialYield() {
+  //   return Container(
+  //     child: Column(
+  //       children: [
+  //         Container(
+  //           child: Text(
+  //             '${Constant.POTENTIAL_YIELD_DISPLAY}',
+  //             style: Styles.locationTileTitleLight,
+  //           ),
+  //           padding: EdgeInsets.only(left: 23),
+  //         ),
+  //         Container(
+  //           child: Text(
+  //             '${this.field.customizedParameters.potentialYield}',
+  //             style: Styles.locationTileTitleLight,
+  //           ),
+  //           padding: EdgeInsets.only(left: 23),
+  //         ),
+  //         Slider(
+  //             value: this.field.customizedParameters.potentialYield,
+  //             onChanged: (double value) {
+  //               setState(() {
+  //                 this.field.customizedParameters.potentialYield = value;
+  //               });
+  //             },
+  //             min: 0,
+  //             max: 80000,
+  //             divisions: 100,
+  //             label: '${Constant.POTENTIAL_YIELD_DISPLAY}'),
+  //       ],
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //     ),
+  //     height: 150,
+  //     padding: EdgeInsets.only(bottom: 20, top: 10), //ILA
+  //   );
+  // }
 
   Widget _renderAutoIrrigationSwitch() {
     return Container(
@@ -277,6 +281,235 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
       padding: EdgeInsets.only(bottom: 20, top: 10),
     );
   }
+
+  Widget _renderIrrigationDurationSlider () {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.IRRIGATION_DURATION_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.irrigationDuration}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.irrigationDuration,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.irrigationDuration = value;
+                });
+              },
+              min: 0,
+              max: 24,
+              divisions: 100,
+              label: '${Constant.IRRIGATION_DURATION_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: _sliderHeight,
+      padding: EdgeInsets.only(bottom: 20, top: 10),
+    );
+  }
+
+  Widget _renderDripRateSlider () {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.DRIP_RATE_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.dripRate}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.dripRate,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.dripRate = value;
+                });
+              },
+              min: 0,
+              max: 3,
+              divisions: 100,
+              label: '${Constant.DRIP_RATE_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: _sliderHeight,
+      padding: EdgeInsets.only(bottom: 20, top: 10),
+    );
+  }
+
+  Widget _renderDistanceBetweenHolesSlider () {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.DISTANCE_BETWEEN_HOLES_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.distanceBetweenHoles}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.distanceBetweenHoles,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.distanceBetweenHoles = value;
+                });
+              },
+              min: 0,
+              max: 100,
+              divisions: 100,
+              label: '${Constant.DISTANCE_BETWEEN_HOLES_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: _sliderHeight,
+      padding: EdgeInsets.only(bottom: 20, top: 10),
+    );
+  }
+
+  Widget _renderDistanceBetweenRowsSlider () {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.DISTANCE_BETWEEN_ROWS_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.distanceBetweenRows}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.distanceBetweenRows,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.distanceBetweenRows = value;
+                });
+              },
+              min: 0,
+              max: 100,
+              divisions: 100,
+              label: '${Constant.DISTANCE_BETWEEN_ROWS_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: _sliderHeight,
+      padding: EdgeInsets.only(bottom: 20, top: 10),
+    );
+  }
+
+  Widget _renderScaleRainSlider () {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.SCALE_RAIN_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.scaleRain}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.scaleRain,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.scaleRain = value;
+                });
+              },
+              min: 0,
+              max: 100,
+              divisions: 100,
+              label: '${Constant.SCALE_RAIN_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: _sliderHeight,
+      padding: EdgeInsets.only(bottom: 20, top: 10),
+    );
+  }
+
+  Widget _renderFertilizerLevelSlider () {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              '${Constant.FERTILIZATION_LEVEL_DISPLAY}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Container(
+            child: Text(
+              '${this.field.customizedParameters.fertilizationLevel}',
+              style: Styles.locationTileTitleLight,
+            ),
+            padding: EdgeInsets.only(left: 23),
+          ),
+          Slider(
+              value: this.field.customizedParameters.fertilizationLevel,
+              onChanged: (double value) {
+                setState(() {
+                  this.field.customizedParameters.fertilizationLevel = value;
+                });
+              },
+              min: 0,
+              max: 100,
+              divisions: 100,
+              label: '${Constant.FERTILIZATION_LEVEL_DISPLAY}'),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      height: _sliderHeight,
+      padding: EdgeInsets.only(bottom: 20, top: 10),
+    );
+  }
+
 
   void _navigateToDetailIrrigationPage(BuildContext context, Field field) {
     Navigator.push(context,

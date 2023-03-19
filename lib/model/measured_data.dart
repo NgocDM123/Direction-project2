@@ -5,12 +5,10 @@ import '../constant.dart';
 class MeasuredData {
   String fieldName;
   double rainFall; //(measure)
-  double humidity30; //(measure)
-  double humidity60; //(measure)
+  double relativeHumidity; //(measure)
   double temperature; //(measure) nhiet do khong khi
-  double soilTemperature; //(measure)
   double windSpeed; //(measure)
-  double Rn; //(measure) buc xa be mat cay trong
+  double radiation; //(measure) buc xa be mat cay trong
 
   // MeasuredData(
   //     {required this.fieldName,
@@ -22,18 +20,16 @@ class MeasuredData {
   //     required this.windSpeed,
   //     required this.Rn});
 
-  MeasuredData(this.fieldName, this.rainFall, this.humidity30, this.humidity60,
-      this.temperature, this.soilTemperature, this.windSpeed, this.Rn);
+  MeasuredData(this.fieldName, this.rainFall, this.relativeHumidity,
+      this.temperature, this.windSpeed, this.radiation);
 
   MeasuredData.newOne(String name)
       : fieldName = name,
         rainFall = 0,
-        humidity30 = 0,
-        humidity60 = 0,
+        relativeHumidity = 0,
         temperature = 0,
-        soilTemperature = 0,
         windSpeed = 0,
-        Rn = 0;
+        radiation = 0;
 
   Future<void> getDataFromDb(DateTime time) async {
     DataSnapshot data;
@@ -48,13 +44,11 @@ class MeasuredData {
         .get();
     if (snapshot.exists) {
       var length = snapshot.children.length;
-      if(length > 3) {
+      if (length > 3) {
         data = snapshot.children.elementAt(length - 3);
-      }
-      else {
+      } else {
         data = snapshot.children.elementAt(0);
       }
-
     } else {
       snapshot = await FirebaseDatabase.instance
           .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
@@ -64,22 +58,16 @@ class MeasuredData {
       var lastData = a.children.elementAt(length - 3);
       data = lastData;
     }
-    this.humidity30 =
-        double.parse(data.child('${Constant.HUMIDITY_30}').value.toString());
-    this.humidity60 =
-        double.parse(data.child('${Constant.HUMIDITY_60}').value.toString());
+    this.relativeHumidity =
+        double.parse(data.child('${Constant.RELATIVE_HUMIDITY}').value.toString());
     this.temperature =
         double.parse(data.child('${Constant.TEMPERATURE}').value.toString());
-    this.soilTemperature = double.parse(
-        data.child('${Constant.SOIL_TEMPERATURE}').value.toString());
     this.rainFall =
         double.parse(data.child('${Constant.RAIN_FALL}').value.toString());
     this.windSpeed =
         double.parse(data.child('${Constant.WIND_SPEED}').value.toString());
-    this.Rn = double.parse(data.child('${Constant.RN}').value.toString());
+    this.radiation = double.parse(data.child('${Constant.RADIATION}').value.toString());
   }
-
-
 
   Future<void> writeDataToDb() async {
     DatabaseReference ref = FirebaseDatabase.instance
@@ -99,14 +87,9 @@ class MeasuredData {
         rainFall.add(value);
       }
     }
-   // print (rainFall);
+    // print (rainFall);
     return rainFall;
   }
-
-
-
-
-
 
   String _format(int n) {
     if (n < 10)
