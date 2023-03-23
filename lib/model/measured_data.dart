@@ -5,20 +5,11 @@ import '../constant.dart';
 class MeasuredData {
   String fieldName;
   double rainFall; //(measure)
-  double relativeHumidity; //(measure)
+  double relativeHumidity; //(measure) do am khong khi
   double temperature; //(measure) nhiet do khong khi
   double windSpeed; //(measure)
   double radiation; //(measure) buc xa be mat cay trong
 
-  // MeasuredData(
-  //     {required this.fieldName,
-  //     required this.rainFall,
-  //     required this.humidity30,
-  //     required this.humidity60,
-  //     required this.temperature,
-  //     required this.soilTemperature,
-  //     required this.windSpeed,
-  //     required this.Rn});
 
   MeasuredData(this.fieldName, this.rainFall, this.relativeHumidity,
       this.temperature, this.windSpeed, this.radiation);
@@ -31,16 +22,37 @@ class MeasuredData {
         windSpeed = 0,
         radiation = 0;
 
-  Future<void> getDataFromDb(DateTime time) async {
+
+  Future<void> updateDataFromDb() async{ // co data tai time thi tra ve khong thi tim time o gan nhat
+    DateTime time = DateTime.now();
+    MeasuredData.getWeatherDataFromDb(Constant.USER, this.fieldName, time).then((value)  {
+      this.radiation = value[0];
+      this.rainFall = value[1];
+      this.relativeHumidity = value[2];
+      this.temperature = value[3];
+      this.windSpeed = value[4];
+    });
+  }
+
+  static Future<List<double>> getWeatherDataFromDb(String userName, String fieldName, DateTime time) async{
+    List<double> weather = [];
     DataSnapshot data;
     String dayPath =
-        '${_format(time.year)}-${_format(time.month)}-${_format(time.day)}';
-    // String timePath =
-    //     '${_format(time.hour)}:${_format(time.minute)}:${_format(time.second)}';
+        '${Constant.format(time.year)}-${Constant.format(time.month)}-${Constant.format(time.day)}';
+    String timePath =
+        '${Constant.format(time.hour)}:${Constant.format(time.minute)}:${Constant.format(time.second)}';
 
     DataSnapshot snapshot = await FirebaseDatabase.instance
         .ref(
-            '${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}/$dayPath')
+        '$userName/$fieldName/${Constant.MEASURED_DATA}/$dayPath/$timePath')
+        .get();
+    if (snapshot.exists) {
+      data = snapshot;
+    }
+
+    snapshot = await FirebaseDatabase.instance
+        .ref(
+        '$userName/$fieldName/${Constant.MEASURED_DATA}/$dayPath')
         .get();
     if (snapshot.exists) {
       var length = snapshot.children.length;
@@ -51,23 +63,35 @@ class MeasuredData {
       }
     } else {
       snapshot = await FirebaseDatabase.instance
-          .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
+          .ref('$userName/$fieldName/${Constant.MEASURED_DATA}')
           .get();
       var a = snapshot.children.last; // di den ngay muon nhat
       var length = a.children.length;
-      var lastData = a.children.elementAt(length - 3);
-      data = lastData;
+      if (length > 2) {
+        var lastData = a.children.elementAt(length - 3);
+        data = lastData;
+      } else
+        data = a.children.elementAt(0);
     }
-    this.relativeHumidity =
-        double.parse(data.child('${Constant.RELATIVE_HUMIDITY}').value.toString());
-    this.temperature =
+    var relativeHumidity = double.parse(
+        data.child('${Constant.RELATIVE_HUMIDITY}').value.toString());
+    var temperature =
         double.parse(data.child('${Constant.TEMPERATURE}').value.toString());
-    this.rainFall =
+    var rainFall =
         double.parse(data.child('${Constant.RAIN_FALL}').value.toString());
-    this.windSpeed =
+    var windSpeed =
         double.parse(data.child('${Constant.WIND_SPEED}').value.toString());
-    this.radiation = double.parse(data.child('${Constant.RADIATION}').value.toString());
+    var radiation =
+        double.parse(data.child('${Constant.RADIATION}').value.toString());
+    weather.add(radiation);
+    weather.add(rainFall);
+    weather.add(relativeHumidity);
+    weather.add(temperature);
+    weather.add(windSpeed);
+    return weather;
   }
+
+
 
   Future<void> writeDataToDb() async {
     DatabaseReference ref = FirebaseDatabase.instance
@@ -91,10 +115,5 @@ class MeasuredData {
     return rainFall;
   }
 
-  String _format(int n) {
-    if (n < 10)
-      return '0$n';
-    else
-      return '$n';
-  }
+  
 }

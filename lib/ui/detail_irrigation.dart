@@ -31,37 +31,34 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
 
   @override
   Widget build(BuildContext context) {
-    this.field.getGeneralDataFromDb();
     return Scaffold(
       appBar: AppBar(
         title: Text('${_appBarText()}'),
       ),
-      body: _renderBody(),
+      body: _loadDataBeforeRenderBody(),
     );
   }
 
-  // Widget build(BuildContext context) {
-  //   //this.field.getGeneralDataFromDb();
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: Text('${_appBarText()}'),
-  //     ),
-  //     body: FutureBuilder(
-  //       future: this.field.getGeneralDataFromDb(),
-  //     ),
-  //   );
-  // }
-
-  // Future<Widget> _build() async{
-  //   await this.field.getGeneralDataFromDb();
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: Text('${_appBarText()}'),
-  //     ),
-  //     body: _renderBody(),
-  //   );
-  // }
-
+  Widget _loadDataBeforeRenderBody() {
+    return FutureBuilder(
+      future: this.field.getGeneralDataFromDb(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              '${snapshot.error} occurred',
+              style: TextStyle(fontSize: 18),
+            ),
+          );
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          return _renderBody();
+        } else
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+      },
+    );
+  }
 
   String _appBarText() {
     String s = '';
@@ -79,6 +76,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
       return _notIrrigatingBody();
   }
 
+  //dang tuoi
   Widget _irrigatingBody() {
     return Container(
       child: Column(
@@ -117,6 +115,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
     );
   }
 
+  //dang khong tuoi
   Widget _notIrrigatingBody() {
     if (this.field.customizedParameters.autoIrrigation)
       return _autoNotIrrigation();

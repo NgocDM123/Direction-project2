@@ -121,6 +121,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  csv:
+    dependency: "direct main"
+    description:
+      name: csv
+      sha256: "18aef53ab72181a0b5384562d18c8cbd57e941e24cb8e54eb41409d3d8abdc6d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.1"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -162,7 +170,7 @@ packages:
     source: hosted
     version: "1.2.1"
   file:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: file
       sha256: "1b92bec4fc2a72f59a8e15af5f52cd441e4a7860b49499d69dfa817af20e925d"
@@ -465,10 +473,10 @@ packages:
     dependency: "direct main"
     description:
       name: path_provider
-      sha256: "04890b994ee89bfa80bf3080bfec40d5a92c5c7a785ebb02c13084a099d2b6f9"
+      sha256: c7edf82217d4b2952b2129a61d3ad60f1075b9299e629e149a8d2e39c2e6aad4
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.13"
+    version: "2.0.14"
   path_provider_android:
     dependency: transitive
     description:

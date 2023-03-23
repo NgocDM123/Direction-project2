@@ -40,6 +40,12 @@ class Constant {
   static const SCALE_RAIN_DISPLAY = 'Reduce or increase expected rainfall (%)';
   static const FERTILIZATION_LEVEL = 'fertilizationLevel';
   static const FERTILIZATION_LEVEL_DISPLAY = 'Reduce or increase fertilizer level (%)';
-
+  static const IRRIGATION_FOR_THE_NEXT_DAY = 'irrigationForTheNextDay';
+  static String format(int n) {
+    if (n < 10)
+      return '0$n';
+    else
+      return '$n';
+  }
 
 }

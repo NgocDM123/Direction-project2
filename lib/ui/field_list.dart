@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../model/field.dart';
 import '../styles.dart';
@@ -32,15 +34,6 @@ class _FieldListState extends State<FieldList> {
         title: Text(
           "Fields of ${Constant.USER}",
         ),
-        // flexibleSpace: Container(
-        //   decoration: BoxDecoration(
-        //     gradient: LinearGradient(
-        //       colors: [Colors.blue, Colors.white],
-        //       begin: Alignment.topLeft,
-        //       end: Alignment.bottomRight
-        //     )
-        //   ),
-        // ),
       ),
       body: Stack(
         children: [
@@ -197,11 +190,16 @@ class _FieldListState extends State<FieldList> {
     setState(() {
       this._displayForm = false;
     });
+    await newField.createWeatherDataFile();
   }
 
   Future<void> _deleteField(String fieldName) async {
-    var a = FirebaseDatabase.instance.ref("${Constant.USER}/${fieldName}");
+    var a = FirebaseDatabase.instance.ref("${Constant.USER}/$fieldName");
     a.remove();
+    final String directory = (await getApplicationSupportDirectory()).path;
+    final path = "$directory/$fieldName.csv";
+    //final csvFile = new File(path).delete();
+    await File(path).delete();
     setState(() {});
   }
 

@@ -27,12 +27,29 @@ class _FieldDetailState extends State<FieldDetail> {
 
   @override
   Widget build(BuildContext context) {
-    field.getDataFromDb(DateTime.now().toLocal());
     return Scaffold(
       appBar: AppBar(
         title: Text(this.field.fieldName),
       ),
-      body: _renderBody(context, this.field),
+      body: _loadDataBeforeRenderBody(context, this.field)
+    );
+  }
+
+  Widget _loadDataBeforeRenderBody(BuildContext context, Field field) {
+    return FutureBuilder(
+      future: this.field.getDataFromDb(),
+      builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                '${snapshot.error} occurred',
+                style: TextStyle(fontSize: 18),
+              ),
+            );
+          } else if (true) {
+            return _renderBody(context, field);
+          }
+      },
     );
   }
 
@@ -97,10 +114,8 @@ class _FieldDetailState extends State<FieldDetail> {
   }
 
   void _navigateToPredictedYieldPage(BuildContext context, Field field) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => PredictedYieldPage(field)));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => PredictedYieldPage(field)));
   }
 
   Widget _renderPredictYield() {
@@ -109,7 +124,8 @@ class _FieldDetailState extends State<FieldDetail> {
       style: ButtonStyle(),
       child:
           Text('Predict Yield of ${this.field.fieldName} field'.toUpperCase()),
-      onPressed: () => _navigateToPredictedYieldPage(context, this.field), // todo show the predicted yield
+      onPressed: () => _navigateToPredictedYieldPage(
+          context, this.field), // todo show the predicted yield
     ));
     //height: 100,
   }
