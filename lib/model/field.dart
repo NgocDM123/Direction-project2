@@ -141,9 +141,9 @@ class Field {
   MeasuredData measuredData;
   String startIrrigation;
   String endIrrigation;
-
   static const int _printSize = 366;
   static final double pdt = 3.0;
+  double _autoIrrigateTime = -1;
   List<List<double>> _results =
       List.generate(8, (index) => List.generate(_printSize, (index) => 0.0));
   List<double> _printTime = List.generate(_printSize, (index) => -1000.0);
@@ -262,67 +262,6 @@ class Field {
   //todo predict yield of the field day by day (test)
   Future<List<double>> predictYield() async {
     return yields = [0, 1, 2, 3, 4];
-    // List<double> yields = [];
-    // yields.add(this.customizedParameters.iLA);
-    // DataSnapshot snapshot = await FirebaseDatabase.instance
-    //     .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
-    //     .get();
-    // int length = snapshot.children.length - 2; //sum of day
-    // for (var index = 0; index < snapshot.children.length - 1; index++) {
-    //   //1 child = 1 day
-    //   DataSnapshot child = snapshot.children.elementAt(index);for (var index = 0; index < snapshot.children.length - 1; index++)
-    //
-    //   List<MeasuredData> data = [];
-    //   DataSnapshot value;
-    //   List<int> time = [
-    //     0,
-    //     (length / 3).round(),
-    //     2 * (length / 3).round(),
-    //     length - 1
-    //   ]; // 4 times in a day
-    //
-    //   // get data for 4 times in a day
-    //   for (var i = 0; i < time.length; i++) {
-    //     data.add(MeasuredData.newOne(''));
-    //     value = child.children.elementAt(time[i]); // 1 value = 1 time
-    //     data.elementAt(i).relativeHumidity = double.parse(
-    //         value.child('${Constant.RELATIVE_HUMIDITY}').value.toString());
-    //     data.elementAt(i).temperature = double.parse(
-    //         value.child('${Constant.TEMPERATURE}').value.toString());
-    //     data.elementAt(i).windSpeed = double.parse(
-    //         value.child('${Constant.WIND_SPEED}').value.toString());
-    //     // data.elementAt(i).Rn =
-    //     //     double.parse(value.child('${Constant.RN}').value.toString());
-    //   }
-    //
-    //   List<double> k = []; // coefficients of the equation
-    //   double tmp = _ode(yields.elementAt(index), data.elementAt(0), index) * 1 / 6;
-    //   k.add(tmp); //k1
-    //   tmp = _ode(
-    //           yields.elementAt(index) + k.elementAt(0) / 2, data.elementAt(1), index) *
-    //       2 /
-    //       6;
-    //   k.add(tmp); //k2
-    //   tmp = _ode(
-    //           yields.elementAt(index) + k.elementAt(1) / 2, data.elementAt(2), index) *
-    //       2 /
-    //       6;
-    //   k.add(tmp); //k3
-    //   tmp = _ode(yields.elementAt(index) + k.elementAt(2), data.elementAt(3), index) *
-    //       1 /
-    //       6;
-    //   k.add(tmp); //k4
-    //
-    //   tmp = yields.elementAt(index);
-    //   for (var kIndex = 0; kIndex < 4; kIndex++) {
-    //     tmp += k.elementAt(kIndex);
-    //   }
-    //
-    //   yields.add(tmp);
-    // }
-    //
-    // print("========================$yields");
-    // return yields;
   }
 
   //get Weather data at time t (DateTime) directly from firebase
@@ -370,7 +309,7 @@ class Field {
     return weatherData;
   }
 
-  //get all Weather data from firebase
+  //get all new weather data from firebase
   Future<List<List<dynamic>>> _getAllWeatherDataFromDb() async {
     List<List<dynamic>> listData = [];
     final String directory = (await getApplicationSupportDirectory()).path;
@@ -382,34 +321,37 @@ class Field {
           CsvToListConverter(),
         )
         .toList();
+
     bool check = true;
-    if(listData.length < 2) {
+    if (listData.length < 2) {
       check = false;
     }
     DateTime dateTime = DateTime.now(); // for initialize
     if (check == true) {
       var s = listData[listData.length - 1][_iTime];
-       dateTime = DateTime.parse(s);
+      dateTime = DateTime.parse(s);
     }
-
 
     List<List<dynamic>> data = [];
     DataSnapshot snapshot = await FirebaseDatabase.instance
         .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
+        .orderByKey()
         .get();
-    for (var index = 0; index < snapshot.children.length; index++) {
 
-      DataSnapshot day = snapshot.children.elementAt(index);
-      if(check == true) {
+    for (var day in snapshot.children) {
+      //DataSnapshot day = snapshot.children.elementAt(index);
+      day.ref.orderByKey();
+      if (check == true) {
         DateTime timeToCompare = DateTime.parse(day.key.toString());
         if (timeToCompare.isBefore(dateTime)) continue;
       }
 
       for (var j = 1; j < day.children.length - 1; j++) {
         DataSnapshot time = day.children.elementAt(j);
-        DateTime timeToCompare = DateTime.parse("${day.key.toString()} ${time.key.toString()}");
+        DateTime timeToCompare =
+            DateTime.parse("${day.key.toString()} ${time.key.toString()}");
 
-        if(check) {
+        if (check) {
           if (timeToCompare.isBefore(dateTime) ||
               timeToCompare.isAtSameMomentAs(dateTime)) continue;
         }
@@ -440,6 +382,8 @@ class Field {
         data.add(result);
       }
     }
+    data.sort((a, b) => a[1].compareTo(b[1]));
+    data.add([]);
     return data;
   }
 
@@ -455,6 +399,7 @@ class Field {
         "Wind",
         "Irrigation"
       ],
+      []
     ];
     String csvData = ListToCsvConverter().convert(data);
     final String directory = (await getApplicationSupportDirectory()).path;
@@ -463,17 +408,50 @@ class Field {
     await file.writeAsString(csvData);
   }
 
+  //update weather csv file
   writeWeatherDataToCsvFile() async {
     List<List<dynamic>> data = [];
     await _getAllWeatherDataFromDb().then((value) => {
-          // value.sort()
-          data.add(value),
+          for (var index in value) data.add(index),
         });
     String csvData = ListToCsvConverter().convert(data);
     final String directory = (await getApplicationSupportDirectory()).path;
     final path = "$directory/${this.fieldName}.csv";
     final File file = File(path);
     await file.writeAsString(csvData, mode: FileMode.append);
+  }
+
+  runModel() async {
+    //update data
+    await writeWeatherDataToCsvFile();
+    await loadAllWeatherDataFromCsvFile();
+    //run model
+    await _simulate();
+   // if (this.customizedParameters.autoIrrigation) updateIrrigationToDb();
+  }
+
+  //return doy
+  double nextIrrigationDate() {
+    double current = _getDoy(DateTime.now());
+    double doy = -1;
+    doy = _results[8].last + 1; // irrigation for the next day
+    return doy - current;
+  }
+
+  Future<void> updateIrrigationToDb() async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref(
+        '${Constant.USER}/${this.fieldName}/${Constant.IRRIGATION_INFORMATION}');
+    await ref.update({
+      "amount": this.nextIrrigationAmount(),
+      "time": DateUtils.dateOnly(DateTime.now())
+    });
+  }
+
+  double nextIrrigationAmount() {
+    double r = -1;
+    int length = _results[2].length;
+    r = _results[2][length - 1] - _results[2][length - 2];
+    return r;
   }
 
   double hourlyET(
@@ -578,20 +556,21 @@ class Field {
     return (EThourly);
   }
 
-  Future<void> simulate() async {
+  Future<void> _simulate() async {
     _iStart = _weatherData[1][_iDOY];
     _iend = _weatherData[_weatherData.length - 1][_iDOY];
+    _autoIrrigateTime = -1;
     var w = ode2initValues(); //initialize to start simulate
     int day = 0;
     for (int i = 2; i < _weatherData.length - 1; i++) {
       //get weather data
-      List<double> wd = [];
-      var rain = _weatherData[i][-_iRain];
-      wd.add(rain);
+      List<double> wd = []; //weatherData
+      var rain = _weatherData[i][_iRain];
+      wd.add(rain); //wd[0]
       var tempC = _weatherData[i][_iTemp];
-      wd.add(tempC);
+      wd.add(tempC); //wd[1]
       var radiation = _weatherData[i][_iRadiation];
-      wd.add(2.5 * radiation); // ppfd = 2.5 * radiation
+      wd.add(2.5 * radiation); // ppfd = 2.5 * radiation, wd[2]
       var relativeHumidity = _weatherData[i][_iRH];
       var wind = _weatherData[i][_iWind];
       var doy = _weatherData[i][_iDOY];
@@ -606,8 +585,8 @@ class Field {
           Constant.elevation,
           Constant.longitude,
           Constant.height);
-      wd.add(et0);
-      wd.add(0.0); //for irrigation
+      wd.add(et0); //wd[3]
+      wd.add(0.0); //for irrigation,wd[4]
       var dt = _weatherData[i][_iDOY] - _weatherData[i - 1][_iDOY];
       wd.add(dt);
 
@@ -630,6 +609,7 @@ class Field {
         _results[7][i] = (w.sublist(ri, ri + _nsl))
                 .reduce((value, element) => value + element) /
             max(1.0, Nopt); //nupt
+        _results[8][i] = doy.ceil(); //doy
         day++;
       }
     }
@@ -658,11 +638,7 @@ class Field {
     final NRT = nrtL.reduce((value, element) => value + element); // Root tips
     final thetaL = y.sublist(
         cnt, cnt += _nsl); //volumetric soil water content for each layer
-    //for (int i = 0; i < thetaL.length; ++i) {
-    //Should not be necessary
-    //if (thetaL[i] > _ths) thetaL[i] = _ths;
-    //if (thetaL[i] < _thr) thetaL[i] = _thr;
-    //}
+
     //final Ncont_l   = intgrl("Ncont",[4.83+35, 10.105, 16.05]*_lvol*BD,"NcontR");// N-content in a soil layer (mg);
     final ncontL = y.sublist(cnt, cnt += _nsl);
     final nuptL = y.sublist(cnt, cnt += _nsl);
@@ -732,8 +708,8 @@ class Field {
     var _fcThreshHold = this.customizedParameters.fieldCapacity;
     _fcThreshHold *= (_ths - _thr) / 100;
     _fcThreshHold += _thr;
-    var _autoIrrigateTime = _getDoy(DateTime.parse(this.startIrrigation));
-    var _stopIrrigation = _getDoy(DateTime.parse(this.endIrrigation));
+    //var _autoIrrigateTime = _getDoy(DateTime.parse(this.startIrrigation));
+    //var _stopIrrigation = _getDoy(DateTime.parse(this.endIrrigation));
     var _autoIrrigationDuration = this.customizedParameters.irrigationDuration /
         24; //convert from hour to day
     var dhr = this.customizedParameters.dripRate; // l/hour
@@ -742,7 +718,6 @@ class Field {
     var _autoIrrigate = dhr * 24.0 / (dhd * dld / 10000.0);
     if (irrigation < 1e-6 &&
         _autoIrrigateTime < ct + _autoIrrigationDuration &&
-        _stopIrrigation > ct &&
         _fcThreshHold > _thr &&
         thEquiv < _fcThreshHold) {
       _autoIrrigateTime = ct;
@@ -831,6 +806,7 @@ class Field {
       // no diffusion, just mass flow with water.
       ncontrL[i] += qFlow[i] * (Nu + Nl) / 2.0 - qFlow[i + 1] * (Nl + Nd) / 2.0;
     }
+
     for (var e in ncontrL) {
       assert(!e.isNaN, print("ncont_l=$ncontL qFlow=$qFlow theta=$thetaL"));
     }
@@ -974,8 +950,6 @@ class Field {
     YR.add(drain);
     YR.add(CFR);
     YR.add(PPFD);
-    //print(y);
-    //print(YR);
 
     assert(YR.length == y.length);
 
@@ -1068,106 +1042,6 @@ class Field {
       y[i] += dt * r[i];
     }
   }
-
-  // Future<void> calculateTheta() async {
-  //   DataSnapshot data;
-  //   DataSnapshot snapshot = await FirebaseDatabase.instance
-  //       .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
-  //       .get();
-  //   // initialize for thetaL
-  //   final thetaL = new List<double>.generate(
-  //       _nsl, (index) => _iTheta + index * _thg); //todo
-  //   // initialize for rootTipsL
-  //   final rootTipsL = List<double>.generate(_nsl, (index) => 0.0);
-  //   final rootTips = rootTipsL.reduce(
-  //       (value, element) => value + element); //sum of root Tips per layer
-  //
-  //   // day loop
-  //   for (var index = 0; index < snapshot.children.length - 1; index++) {
-  //     //if(snapshot.child('yield').exists) break;
-  //     if (snapshot.child('irrigation').exists) {
-  //       if (snapshot.children.elementAt(index) == snapshot.child('irrigation'))
-  //         break;
-  //     }
-  //     double irrigation;
-  //     DataSnapshot day = snapshot.children.elementAt(index);
-  //     // time loop
-  //     for (var j = 0; j < day.children.length - 1; j++) {
-  //       DataSnapshot time = day.children.elementAt(j);
-  //       if (time.child('iTheta').exists)
-  //         continue; // if existing 'iTheta' field => not need calculate iTheta again
-  //       String result = '';
-  //
-  //       final krootL = new List<double>.generate(
-  //           _nsl, (i) => fKroot(thetaL[i], rootTipsL[i]));
-  //       final Kroot = max(
-  //           1e-8,
-  //           krootL.reduce(
-  //               (value, element) => value + element)); //sums up all elements.
-  //       final thEquiv = Kroot > 1e-8
-  //           ? (multiplyLists(thetaL, krootL))
-  //                   .reduce((value, element) => value + element) /
-  //               Kroot
-  //           : thetaL[0];
-  //
-  //       irrigation = (time.child('irrigation').exists)
-  //           ? double.parse(time.child('irrigation').value.toString())
-  //           : irrigation = 0;
-  //       var ct = _getDoy(DateTime.parse(time.child('time').value.toString()));
-  //       //todo, switching maybe not 100% stable in numerical scheme. should be ok with rk4
-  //       var _fcThreshHold = this.customizedParameters.fieldCapacity;
-  //       _fcThreshHold *= (_ths - _thr) / 100;
-  //       _fcThreshHold += _thr;
-  //       var _autoIrrigateTime = _getDoy(DateTime.parse(this.startIrrigation));
-  //       //var _stopIrrigation = _getDoy(DateTime.parse(this.endIrrigation));
-  //       var _autoIrrigationDuration =
-  //           this.customizedParameters.irrigationDuration /
-  //               24; //convert from hour to day
-  //       var dhr = this.customizedParameters.dripRate; // l/hour
-  //       var dhd = this.customizedParameters.distanceBetweenHoles; //cm
-  //       var dld = this.customizedParameters.distanceBetweenRows; //cm
-  //       var _autoIrrigate = dhr * 24.0 / (dhd * dld / 10000.0);
-  //
-  //       // if (thEquiv < _fcThreshHold && irrigation < 1e-6) {
-  //       //   _autoIrrigateTime = ct;
-  //       // }
-  //       // if (ct < _autoIrrigateTime + _autoIrrigationDuration) {
-  //       //   irrigation += _autoIrrigate;
-  //       // }
-  //       var rain = double.parse(time.child('${Constant.RAIN_FALL}').toString());
-  //       var temp =
-  //           double.parse(time.child('${Constant.TEMPERATURE}').toString());
-  //       var radiation =
-  //           double.parse(time.child('${Constant.RADIATION}').toString());
-  //       var relativeHumidity = double.parse(
-  //           time.child('${Constant.RELATIVE_HUMIDITY}').toString());
-  //       var wind =
-  //           double.parse(time.child('${Constant.WIND_SPEED}').toString());
-  //       var ppfd = 2.15 * radiation;
-  //       DateTime dateTime = DateTime.parse(time.child('time').toString());
-  //       var doy = _getDoy(dateTime);
-  //       irrigation = (dateTime.hour == 24)
-  //           ? double.parse(
-  //               day.child('${Constant.IRRIGATION_FOR_THE_NEXT_DAY}').toString())
-  //           : 0.0;
-  //       final precipitation =
-  //           this.customizedParameters.scaleRain * rain + irrigation;
-  //
-  //       final ET0reference = 24 *
-  //           hourlyET(
-  //               temp,
-  //               radiation,
-  //               relativeHumidity,
-  //               wind,
-  //               doy,
-  //               Constant.latitude,
-  //               Constant.longitude,
-  //               Constant.elevation,
-  //               Constant.longitude,
-  //               Constant.height);
-  //     }
-  //   }
-  // }
 
   double _getDoy(DateTime sd) {
     final rsd = new DateTime(sd.year, 1, 1, 0, 0);

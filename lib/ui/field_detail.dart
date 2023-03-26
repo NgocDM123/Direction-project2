@@ -37,7 +37,7 @@ class _FieldDetailState extends State<FieldDetail> {
 
   Widget _loadDataBeforeRenderBody(BuildContext context, Field field) {
     return FutureBuilder(
-      future: this.field.getDataFromDb(),
+      future: this.field.runModel(),
       builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(

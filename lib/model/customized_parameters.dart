@@ -35,14 +35,6 @@ class CustomizedParameters {
         this.scaleRain = 100,
         this.autoIrrigation = true;
 
-  // Future<void> getRGRFromDb() async {
-  //   DataSnapshot snapshot = await FirebaseDatabase.instance
-  //       .ref(
-  //           '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}')
-  //       .get();
-  //   var a = snapshot.child('${Constant.RGR}');
-  //   this.rgr = double.parse(a.value.toString());
-  // }
 
   Future<void> getAutoIrrigationFromDb() async {
     DataSnapshot snapshot = await FirebaseDatabase.instance

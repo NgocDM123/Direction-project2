@@ -187,10 +187,11 @@ class _FieldListState extends State<FieldList> {
     };
     FirebaseDatabase.instance.ref().update(updates);
     await newField.customizedParameters.updateDataToDb();
+    await newField.createWeatherDataFile();
     setState(() {
       this._displayForm = false;
     });
-    await newField.createWeatherDataFile();
+
   }
 
   Future<void> _deleteField(String fieldName) async {

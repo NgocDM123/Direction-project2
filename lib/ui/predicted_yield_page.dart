@@ -100,6 +100,8 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
     ));
   }
 
+  List<List<dynamic>> _testData = [];
+
   Widget _renderWeatherDataTable() {
     return Container(
       child: FutureBuilder(
@@ -109,13 +111,14 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
             this.field.loadAllWeatherDataFromCsvFile().then((value) => {
                   print('========================================'),
                   print(value.length),
-                  print('---------------'),
                   print(value),
                   print('========================================'),
+                  _testData.add(value)
                 });
           }
-
-          return Container();
+          return Container(
+            //child: Text('$_testData}'),
+          );
         },
       ),
     );

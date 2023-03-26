@@ -69,6 +69,13 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
     return s;
   }
 
+  Widget _renderIrrigationAmountByModel() {
+    return Container(
+      child: Text(
+          'The mount of irrigation today is ${this.field.nextIrrigationAmount()}'),
+    );
+  }
+
   Widget _renderBody() {
     if (this.field.irrigationCheck)
       return _irrigatingBody();
@@ -76,12 +83,15 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
       return _notIrrigatingBody();
   }
 
-  //dang tuoi
+  //be irrigating
   Widget _irrigatingBody() {
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          (this.field.customizedParameters.autoIrrigation)
+              ? _renderIrrigationAmountByModel()
+              : Container(),
           Container(
             child: Text(
               'Start irrigation time: ${this.field.startIrrigation}',
@@ -115,7 +125,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
     );
   }
 
-  //dang khong tuoi
+  //not be irrigating
   Widget _notIrrigatingBody() {
     if (this.field.customizedParameters.autoIrrigation)
       return _autoNotIrrigation();

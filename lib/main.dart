@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
       ),
       //home: MyHomePage(title: 'Cassava irrigation'),
       home: DefaultTabController(
-        length: 4,
+        length: 2,
         child: Scaffold(
           appBar: AppBar(
               flexibleSpace: new Column(
@@ -88,8 +88,6 @@ class MyApp extends StatelessWidget {
                 TabBar(
                   tabs: [
                     Tab(icon: Icon(Icons.home)),
-                    Tab(icon: Icon(Icons.table_chart_outlined)),
-                    Tab(icon: Icon(Icons.analytics)),
                     Tab(icon: Icon(Icons.agriculture)),
                   ],
                 ),
@@ -97,8 +95,6 @@ class MyApp extends StatelessWidget {
           body: TabBarView(
             children: [
               MyHomePage(title: ""),
-              UserDataPage(title: "user"),
-              PrognosesPage(title: ""),
               FieldList(),
             ],
           ),
