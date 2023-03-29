@@ -46,9 +46,12 @@ class _FieldDetailState extends State<FieldDetail> {
                 style: TextStyle(fontSize: 18),
               ),
             );
-          } else if (true) {
+          } else if (snapshot.connectionState == ConnectionState.done) {
             return _renderBody(context, field);
           }
+          return Center(
+            child: CircularProgressIndicator(),
+          );
       },
     );
   }

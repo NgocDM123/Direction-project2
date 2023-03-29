@@ -182,7 +182,7 @@ class _FieldListState extends State<FieldList> {
       "${Constant.START_IRRIGATION}": "",
       "${Constant.END_IRRIGATION}": "",
       "${Constant.IRRIGATION_CHECK}": "false",
-      "${Constant.MEASURED_DATA}": "",
+      //"${Constant.MEASURED_DATA}": "",
       "${Constant.CUSTOMIZED_PARAMETERS}": ""
     };
     FirebaseDatabase.instance.ref().update(updates);

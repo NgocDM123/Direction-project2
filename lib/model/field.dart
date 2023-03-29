@@ -144,8 +144,7 @@ class Field {
   static const int _printSize = 366;
   static final double pdt = 3.0;
   double _autoIrrigateTime = -1;
-  List<List<double>> _results =
-      List.generate(8, (index) => List.generate(_printSize, (index) => 0.0));
+  List<List<double>> _results = [];
   List<double> _printTime = List.generate(_printSize, (index) => -1000.0);
 
   List<double> getPrintTime() {
@@ -310,79 +309,53 @@ class Field {
   }
 
   //get all new weather data from firebase
-  Future<List<List<dynamic>>> _getAllWeatherDataFromDb() async {
-    List<List<dynamic>> listData = [];
-    final String directory = (await getApplicationSupportDirectory()).path;
-    final path = "$directory/${this.fieldName}.csv";
-    final csvFile = new File(path).openRead();
-    listData = await csvFile
-        .transform(utf8.decoder)
-        .transform(
-          CsvToListConverter(),
-        )
-        .toList();
-
-    bool check = true;
-    if (listData.length < 2) {
-      check = false;
-    }
-    DateTime dateTime = DateTime.now(); // for initialize
-    if (check == true) {
-      var s = listData[listData.length - 1][_iTime];
-      dateTime = DateTime.parse(s);
-    }
-
+  Future<List<List<dynamic>>> _getAllWeatherDataFromDb(
+      bool check, DateTime dateTime) async {
     List<List<dynamic>> data = [];
     DataSnapshot snapshot = await FirebaseDatabase.instance
         .ref('${Constant.USER}/${this.fieldName}/${Constant.MEASURED_DATA}')
         .orderByKey()
         .get();
+    if (snapshot.exists) {
+      for (var day in snapshot.children) {
+        for (var j = 1; j < day.children.length - 1; j++) {
+          DataSnapshot time = day.children.elementAt(j);
+          DateTime timeToCompare =
+              DateTime.parse("${day.key.toString()} ${time.key.toString()}");
 
-    for (var day in snapshot.children) {
-      //DataSnapshot day = snapshot.children.elementAt(index);
-      day.ref.orderByKey();
-      if (check == true) {
-        DateTime timeToCompare = DateTime.parse(day.key.toString());
-        if (timeToCompare.isBefore(dateTime)) continue;
-      }
+          if (check) {
+            if (timeToCompare.isBefore(dateTime) ||
+                timeToCompare.isAtSameMomentAs(dateTime)) continue;
+          }
 
-      for (var j = 1; j < day.children.length - 1; j++) {
-        DataSnapshot time = day.children.elementAt(j);
-        DateTime timeToCompare =
-            DateTime.parse("${day.key.toString()} ${time.key.toString()}");
-
-        if (check) {
-          if (timeToCompare.isBefore(dateTime) ||
-              timeToCompare.isAtSameMomentAs(dateTime)) continue;
+          var timeField = time.child('time').value.toString();
+          double doy =
+              double.parse(_getDoy(DateTime.parse(timeField)).toString());
+          double radiation = double.parse(
+              time.child('${Constant.RADIATION}').value.toString());
+          double rain = double.parse(
+              time.child('${Constant.RAIN_FALL}').value.toString());
+          double relativeHumidity = double.parse(
+              time.child('${Constant.RELATIVE_HUMIDITY}').value.toString());
+          double temperature = double.parse(
+              time.child('${Constant.TEMPERATURE}').value.toString());
+          double wind = double.parse(
+              time.child('${Constant.WIND_SPEED}').value.toString());
+          var result = [
+            timeField,
+            doy,
+            radiation,
+            rain,
+            relativeHumidity,
+            temperature,
+            wind,
+            0.0 //for irrigation
+          ];
+          data.add(result);
         }
-
-        var timeField = time.child('time').value.toString();
-        double doy =
-            double.parse(_getDoy(DateTime.parse(timeField)).toString());
-        double radiation =
-            double.parse(time.child('${Constant.RADIATION}').value.toString());
-        double rain =
-            double.parse(time.child('${Constant.RAIN_FALL}').value.toString());
-        double relativeHumidity = double.parse(
-            time.child('${Constant.RELATIVE_HUMIDITY}').value.toString());
-        double temperature = double.parse(
-            time.child('${Constant.TEMPERATURE}').value.toString());
-        double wind =
-            double.parse(time.child('${Constant.WIND_SPEED}').value.toString());
-        var result = [
-          timeField,
-          doy,
-          radiation,
-          rain,
-          relativeHumidity,
-          temperature,
-          wind,
-          0.0 //for irrigation
-        ];
-        data.add(result);
       }
+      data.sort((a, b) => a[1].compareTo(b[1]));
     }
-    data.sort((a, b) => a[1].compareTo(b[1]));
     data.add([]);
     return data;
   }
@@ -408,16 +381,37 @@ class Field {
     await file.writeAsString(csvData);
   }
 
-  //update weather csv file
+  // todo update weather csv file
   writeWeatherDataToCsvFile() async {
-    List<List<dynamic>> data = [];
-    await _getAllWeatherDataFromDb().then((value) => {
-          for (var index in value) data.add(index),
-        });
-    String csvData = ListToCsvConverter().convert(data);
     final String directory = (await getApplicationSupportDirectory()).path;
     final path = "$directory/${this.fieldName}.csv";
     final File file = File(path);
+
+    //checking for add new data from database
+    List<List<dynamic>> listData = [];
+    final csvFile = new File(path).openRead();
+    listData = await csvFile
+        .transform(utf8.decoder)
+        .transform(
+          CsvToListConverter(),
+        )
+        .toList();
+    bool check = true;
+    if (listData.length < 2) {
+      check = false;
+    }
+    DateTime dateTime = DateTime.now(); // for initialize
+    if (check == true) {
+      var s = listData[listData.length - 1][_iTime];
+      dateTime = DateTime.parse(s);
+    }
+
+    //update data
+    List<List<dynamic>> data = [];
+    await _getAllWeatherDataFromDb(check, dateTime).then((value) => {
+          for (var index in value) data.add(index),
+        });
+    String csvData = ListToCsvConverter().convert(data);
     await file.writeAsString(csvData, mode: FileMode.append);
   }
 
@@ -425,9 +419,15 @@ class Field {
     //update data
     await writeWeatherDataToCsvFile();
     await loadAllWeatherDataFromCsvFile();
+    await getCustomizedParametersFromDb();
     //run model
     await _simulate();
-   // if (this.customizedParameters.autoIrrigation) updateIrrigationToDb();
+    print("===================");
+    print(_results[2]);
+    print(_results[8]);
+    print(_getDay(_results[8].last));
+    print("====================");
+    // if (this.customizedParameters.autoIrrigation) updateIrrigationToDb();
   }
 
   //return doy
@@ -561,7 +561,10 @@ class Field {
     _iend = _weatherData[_weatherData.length - 1][_iDOY];
     _autoIrrigateTime = -1;
     var w = ode2initValues(); //initialize to start simulate
-    int day = 0;
+    for (var i = 0; i < 9; i++) {
+      _results.add([]);
+    }
+    var day = 0;
     for (int i = 2; i < _weatherData.length - 1; i++) {
       //get weather data
       List<double> wd = []; //weatherData
@@ -595,21 +598,22 @@ class Field {
 
       //if the next time is in a next day
       if (_weatherData[i + 1][_iDOY].floor() - doy.floor() > 0) {
-        _results[0][day] =
-            w[3] * 10 / _APPi; //yield, convert g/plant to kg/ha (default)
-        _results[1][day] = w[9 + 2 * _nsl]; //theta
-        _results[2][day] = w[9 + 5 * _nsl]; //irrigation
-        _results[3][day] = w[4] / _APPi; //lai
-        _results[4][day] =
-            100.0 + 100.0 * w[8] / max(1.0, w[0] + w[1] + w[2] + w[3]); //clab
-        _results[5][day] = w[9 + 5 * _nsl + 5]; //photo
-        _results[6][day] = w[9 + 3 * _nsl]; //topsoil ncont
+        //day = doy.ceil();
+        _results[0]
+            .add(w[3] * 10 / _APPi); //yield, convert g/plant to kg/ha (default)
+        _results[1].add(w[9 + 2 * _nsl]); //theta
+        _results[2].add(w[9 + 5 * _nsl]); //irrigation
+        _results[3].add(w[4] / _APPi); //lai
+        _results[4].add(
+            100.0 + 100.0 * w[8] / max(1.0, w[0] + w[1] + w[2] + w[3])); //clab
+        _results[5].add(w[9 + 5 * _nsl + 5]); //photo
+        _results[6].add(w[9 + 3 * _nsl]); //topsoil ncont
         int ri = 9 + 4 * _nsl;
         final Nopt = 45 * w[0] + 2 * w[3] + 20 * w[1] + 20 * w[2];
-        _results[7][i] = (w.sublist(ri, ri + _nsl))
+        _results[7].add((w.sublist(ri, ri + _nsl))
                 .reduce((value, element) => value + element) /
-            max(1.0, Nopt); //nupt
-        _results[8][i] = doy.ceil(); //doy
+            max(1.0, Nopt)); //nupt
+        _results[8].add(doy); //doy
         day++;
       }
     }
@@ -742,8 +746,8 @@ class Field {
     final actFactor = max(ll * swfe, ETrainFactor);
     final evaporation = actFactor * ET0reference; // su bay hoi
 
-    final actualTranspiration = transpiration *
-        WStrans; // uptake in liter/day per m2 (su thoat hoi nuoc? tai sao lai la uptake?)
+    final actualTranspiration =
+        transpiration * WStrans; // uptake in liter/day per m2
     final wuptrL =
         multiplyListsWithConstant(krootL, actualTranspiration / Kroot);
     //Wupt    = intgrl("Wupt",rep(0.,_nsl),"WuptR")     , # Water uptake (l)
@@ -1051,6 +1055,12 @@ class Field {
         sd.second / (24.0 * 60.0 * 60.0);
     return (doy);
   }
+   DateTime _getDay(double day) {
+    DateTime r = DateTime.now();
+    final rsd = new DateTime(r.year, 1, 1, 0, 0);
+    r = DateUtils.dateOnly(rsd.add(Duration(days: day.ceil())));
+    return r;
+   }
 
   int daysBetween(DateTime from, DateTime to) {
     from = DateTime(from.year, from.month, from.day);
