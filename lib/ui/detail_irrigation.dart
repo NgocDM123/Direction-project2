@@ -195,8 +195,6 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
         initialTime: TimeOfDay.now(),
         initialEntryMode: TimePickerEntryMode.input);
     if (time != null) {
-      TimeOfDay startT;
-      TimeOfDay endT;
       setState(() {
         if (start) {
           assert(
@@ -204,10 +202,9 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
           this.selectedStartTime = time.format(context);
           this.setStartTime = true;
         } else {
-          assert(this.selectedEndTime.compareTo(this.selectedStartTime) > 0);
           this.selectedEndTime = time.format(context);
 
-          this.setEndTime = false;
+          this.setEndTime = true;
         }
       });
     }

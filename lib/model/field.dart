@@ -422,10 +422,10 @@ class Field {
     await getCustomizedParametersFromDb();
     //run model
     await _simulate();
-    print("===================");
-    print(_results[2]);
-    print(_results[8]);
-    print(_getDay(_results[8].last));
+    var day = _getDay(_results[8].last);
+    var amount = _results[2].last;
+    print("====================");
+    print ("The amount of irrigation for $day is $amount m3/ha");
     print("====================");
     // if (this.customizedParameters.autoIrrigation) updateIrrigationToDb();
   }
