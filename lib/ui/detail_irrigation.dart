@@ -1,4 +1,8 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 import '../model/field.dart';
@@ -16,10 +20,8 @@ class DetailIrrigation extends StatefulWidget {
 
 class _DetailIrrigationState extends State<DetailIrrigation> {
   final Field field;
-  String selectedStartTime = '';
-  String selectedEndTime = '';
-  bool setStartTime = false;
-  bool setEndTime = false;
+  DateTime selectedStartTime = DateTime.now();
+  double amount = 0.0; //l/m2
 
   _DetailIrrigationState(this.field);
 
@@ -41,7 +43,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
 
   Widget _loadDataBeforeRenderBody() {
     return FutureBuilder(
-      future: this.field.getGeneralDataFromDb(),
+      future: _loadData(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -57,6 +59,58 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
             child: CircularProgressIndicator(),
           );
       },
+    );
+  }
+
+  Future<void> _loadData() async {
+    await this.field.getGeneralDataFromDb();
+    await this.field.getMeasuredDataFromDb();
+    if (!this.field.irrigationCheck) {
+      if (!this.field.customizedParameters.autoIrrigation) {
+        DataSnapshot snapshot = await FirebaseDatabase.instance
+            .ref(
+                '${Constant.USER}/${this.field.fieldName}/${Constant.IRRIGATION_INFORMATION}')
+            .get();
+        if (!snapshot.exists) {
+          final Map<String, dynamic> updates = {};
+          updates["${Constant.IRRIGATION_INFORMATION}"] = {
+            "time": this.selectedStartTime,
+            "duration": this.amount *
+                this.field.customizedParameters.acreage /
+                this.field.customizedParameters.dripRate /
+                this.field.customizedParameters.numberOfHoles
+          };
+          FirebaseDatabase.instance
+              .ref('${Constant.USER}/${this.field.fieldName}')
+              .update(updates);
+        } else {
+          var s = snapshot.child('time').value.toString();
+          this.selectedStartTime = DateTime.parse(s);
+          s = snapshot.child('duration').value.toString();
+          var duration = double.parse(s);
+          this.amount = duration *
+              this.field.customizedParameters.dripRate /
+              this.field.customizedParameters.acreage *
+              this.field.customizedParameters.numberOfHoles;
+        }
+      }
+    }
+  }
+
+  Widget _renderWeatherData() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Radiation: ${this.field.measuredData.radiation}"),
+          Text("Rain fall: ${this.field.measuredData.rainFall}"),
+          Text(
+              "Relative humidity: ${this.field.measuredData.relativeHumidity}"),
+          Text("Temperature: ${this.field.measuredData.temperature}"),
+          Text("Wind speed: ${this.field.measuredData.windSpeed}")
+        ],
+      ),
     );
   }
 
@@ -77,10 +131,16 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
   }
 
   Widget _renderBody() {
-    if (this.field.irrigationCheck)
-      return _irrigatingBody();
-    else
-      return _notIrrigatingBody();
+    return Container(
+      child: Column(
+        children: [
+          (this.field.irrigationCheck)
+              ? _irrigatingBody()
+              : _notIrrigatingBody(),
+          _renderWeatherData()
+        ],
+      ),
+    );
   }
 
   //be irrigating
@@ -135,8 +195,14 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
 
   Widget _autoNotIrrigation() {
     return Container(
-      child: Lottie.asset('assets/animations/energyshares-plant5.json'),
-    );
+        width: 200,
+        child: Column(
+          children: [
+            Lottie.asset('assets/animations/energyshares-plant5.json'),
+            Text(
+                "The amount of Irrigation for ${this.field.getIrrigationTime()}: ${this.field.getIrrigationAmount()} (l/m2)"),
+          ],
+        ));
   }
 
   Widget _manualNotIrrigation() {
@@ -146,69 +212,92 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
         children: [
           Container(
             child: Lottie.asset('assets/animations/energyshares-plant5.json'),
-            height: 300,
+            height: 200,
           ),
           Container(
               padding: EdgeInsets.only(top: 70),
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  Text(
+                    'Start time: ${this.selectedStartTime}',
+                    style: Styles.timeTitle,
+                  ),
                   OutlinedButton(
                     child: Text(
                       'Choose irrigation start time',
                       style: Styles.timeTitle,
                     ),
-                    onPressed: () => _displayTimeDialog(true),
+                    onPressed: () => _dateTimePickerWidget(context),
                   ),
                   Text(
-                    'Start time: ${this.selectedStartTime}',
+                    "Amount of Irrigation: ${this.amount} (l/m2)",
                     style: Styles.timeTitle,
-                  )
+                  ),
+                  _renderAmountOfIrrigationTextField()
                 ],
               )),
-          Container(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              OutlinedButton(
-                child: Text(
-                  'Choose irrigation end time',
-                  style: Styles.timeTitle,
-                ),
-                onPressed: () => _displayTimeDialog(false),
-              ),
-              Text(
-                'End time: ${this.selectedEndTime}',
-                style: Styles.timeTitle,
-              )
-            ],
-          )),
           _renderConfirmButton(),
         ],
       ),
     );
   }
 
-  Future<void> _displayTimeDialog(bool start) async {
-    final TimeOfDay? time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-        initialEntryMode: TimePickerEntryMode.input);
-    if (time != null) {
-      setState(() {
-        if (start) {
-          assert(
-              this.selectedStartTime.compareTo(TimeOfDay.now().toString()) < 0);
-          this.selectedStartTime = time.format(context);
-          this.setStartTime = true;
-        } else {
-          this.selectedEndTime = time.format(context);
+  // Future<void> _displayTimeDialog() async {
+  //   final TimeOfDay? time = await showTimePicker(
+  //     context: context,
+  //     initialTime: TimeOfDay.now(),
+  //     initialEntryMode: TimePickerEntryMode.input,
+  //   );
+  //   if (time != null) {
+  //     setState(() {
+  //       DatabaseReference ref = FirebaseDatabase.instance.ref(
+  //           '${Constant.USER}/${this.field.fieldName}/${Constant.IRRIGATION_INFORMATION}');
+  //       ref.update({
+  //         "time":
+  //             "${this.selectedStartTime.hour}:${this.selectedStartTime.minute}",
+  //         "amount": 0.0
+  //       });
+  //     });
+  //   }
+  // }
 
-          this.setEndTime = true;
-        }
-      });
-    }
+  _dateTimePickerWidget(BuildContext context) async {
+    return DatePicker.showDateTimePicker(
+      context,
+      //dateFormat: 'dd MMMM yyyy HH:mm',
+      currentTime: DateTime.now(),
+      minTime: DateTime(2018),
+      maxTime: DateTime(2100),
+      //onMonthChangeStartWithFirstDate: true,
+      onConfirm: (dateTime) {
+        // this.selectedStartTime = dateTime;
+        this.selectedStartTime = dateTime;
+        print(this.selectedStartTime);
+      },
+    );
   }
+
+  Widget _renderAmountOfIrrigationTextField() {
+    return Container(
+      child: TextField(
+        onSubmitted: (value) {
+          this.amount = double.parse(value);
+        },
+        keyboardType: TextInputType.number,
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter(RegExp(r'[0-9.]'), allow: true)
+        ],
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          hoverColor: Colors.blue,
+          hintText: 'Enter amount of irrigation',
+        ),
+      ),
+    );
+  }
+
+  double _toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
 
   Widget _renderConfirmButton() {
     return Container(
@@ -219,9 +308,20 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
           style: Styles.timeTitle,
         ),
         onPressed: () => {
-          this.field.startIrrigation = selectedStartTime,
-          this.field.endIrrigation = selectedEndTime,
-          this.field.updateGeneralDataToDb(),
+          setState(() {
+            final Map<String, dynamic> updates = {};
+            updates["${Constant.IRRIGATION_INFORMATION}"] = {
+              "time": this.selectedStartTime.toString(),
+              "duration": this.amount *
+                  this.field.customizedParameters.acreage /
+                  this.field.customizedParameters.dripRate /
+                  this.field.customizedParameters.numberOfHoles,
+              // "${day}": tIrr
+            };
+            FirebaseDatabase.instance
+                .ref('${Constant.USER}/${this.field.fieldName}')
+                .update(updates);
+          })
         },
       ),
     );

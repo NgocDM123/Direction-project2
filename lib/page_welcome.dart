@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
-
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key)  {
-
-}
+  MyHomePage({Key? key, required this.title}) : super(key: key) {}
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -21,14 +17,11 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
-
 }
-
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white54,
       appBar: AppBar(
@@ -57,6 +50,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 fontWeight: FontWeight.normal,
                 letterSpacing: 1,
               ),
+            ),
+            Container(
+              child: Image.asset(
+                "assets/images/VNU-UET.jpg",
+                width: 150,
+                height: 150,
+              ),
+              padding: EdgeInsets.only(top: 20),
+              alignment: Alignment.center,
             ),
             Image.asset(
               "assets/images/logoFZJ.png",

@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import '../firebase_options.dart';
 import 'dart:math';
@@ -27,7 +28,7 @@ late final double _lvol =
 //double m_day = 60 * 24;
 //double m5_day = 12 * 24;
 final double _BD =
-    1360; // soil bulk density in (kg/m3) # Burrirum 1.36, Ratchaburi 1.07 g.cm3
+    1380; // soil bulk density in (kg/m3) # Burrirum 1.36, Ratchaburi 1.07 g.cm3
 //double raiInm2 = 1600; // area of one rai in m2
 
 double _cuttingDryMass = 75.4; //g
@@ -42,7 +43,7 @@ bool _zerodrain = true;
 //todo needs to be based on planting date provided by user.then weather should start at right point
 double _iTheta = 0.22;
 double _thm = 0.18; //drier todo make
-double _ths = 0.3; //field capacity, not saturation todo rename
+double _ths = 0.27; //field capacity, not saturation todo rename
 double _thr = 0.015;
 double _thg = 0.02;
 double _rateFlow = 1.3;
@@ -318,7 +319,7 @@ class Field {
         .get();
     if (snapshot.exists) {
       for (var day in snapshot.children) {
-        for (var j = 1; j < day.children.length - 1; j++) {
+        for (var j = 0; j < day.children.length; j++) {
           DataSnapshot time = day.children.elementAt(j);
           DateTime timeToCompare =
               DateTime.parse("${day.key.toString()} ${time.key.toString()}");
@@ -422,12 +423,42 @@ class Field {
     await getCustomizedParametersFromDb();
     //run model
     await _simulate();
-    var day = _getDay(_results[8].last);
-    var amount = _results[2].last;
-    print("====================");
-    print ("The amount of irrigation for $day is $amount m3/ha");
-    print("====================");
+    if (this.customizedParameters.autoIrrigation) _updateAutoIrrigationInfo();
     // if (this.customizedParameters.autoIrrigation) updateIrrigationToDb();
+  }
+  double getIrrigationAmount() {
+     var length = _results[2].length;
+    double irr = (length > 1)
+        ? _results[2].last - _results[2][length - 2]
+        : _results[2][0];
+    return irr;
+  }
+
+  String getIrrigationTime() {
+    var day = _getDay(_results[8].last);
+    return day.toString();
+  }
+
+  _updateAutoIrrigationInfo() {
+    var length = _results[2].length;
+    double irr = (length > 1)
+        ? _results[2].last - _results[2][length - 2]
+        : _results[2][0];
+    irr *= 0.1; // convert to l/m2
+    var duration = irr *
+        this.customizedParameters.acreage /
+        this.customizedParameters.dripRate / this.customizedParameters.numberOfHoles * 3600; //convert to second
+    var day = _getDay(_results[8].last);
+    String formattedData = DateFormat('yyyy-MM-dd').format(day);
+    final Map<String, dynamic> updates = {};
+    updates["${Constant.IRRIGATION_INFORMATION}"] = {
+      "duration": duration,
+      "time": formattedData,
+      // "${day}": tIrr
+    };
+    FirebaseDatabase.instance
+        .ref('${Constant.USER}/${this.fieldName}')
+        .update(updates);
   }
 
   //return doy
@@ -1055,12 +1086,13 @@ class Field {
         sd.second / (24.0 * 60.0 * 60.0);
     return (doy);
   }
-   DateTime _getDay(double day) {
+
+  DateTime _getDay(double day) {
     DateTime r = DateTime.now();
     final rsd = new DateTime(r.year, 1, 1, 0, 0);
     r = DateUtils.dateOnly(rsd.add(Duration(days: day.ceil())));
     return r;
-   }
+  }
 
   int daysBetween(DateTime from, DateTime to) {
     from = DateTime(from.year, from.month, from.day);

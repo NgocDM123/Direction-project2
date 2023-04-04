@@ -12,9 +12,12 @@ class CustomizedParameters {
   double distanceBetweenRows; //cm
   double scaleRain; //(%)
   double fertilizationLevel;
+  double acreage;
+  int numberOfHoles;
 
   CustomizedParameters(
       this.fieldName,
+      this.acreage,
       this.fieldCapacity,
       this.autoIrrigation,
       this.irrigationDuration,
@@ -22,10 +25,12 @@ class CustomizedParameters {
       this.distanceBetweenHoles,
       this.distanceBetweenRows,
       this.scaleRain,
-      this.fertilizationLevel); //(%)
+      this.fertilizationLevel,
+      this.numberOfHoles); //(%)
 
   CustomizedParameters.newOne(name)
       : this.fieldName = name,
+        this.acreage = 50.0,
         this.fieldCapacity = 0,
         this.distanceBetweenHoles = 30,
         this.irrigationDuration = 7,
@@ -33,8 +38,8 @@ class CustomizedParameters {
         this.dripRate = 1.6,
         this.fertilizationLevel = 100,
         this.scaleRain = 100,
+        this.numberOfHoles = 8,
         this.autoIrrigation = true;
-
 
   Future<void> getAutoIrrigationFromDb() async {
     DataSnapshot snapshot = await FirebaseDatabase.instance
@@ -74,6 +79,10 @@ class CustomizedParameters {
     this.scaleRain = double.parse(a.value.toString());
     a = snapshot.child('${Constant.FERTILIZATION_LEVEL}');
     this.fertilizationLevel = double.parse(a.value.toString());
+    a = snapshot.child("${Constant.ACREAGE}");
+    this.acreage = double.parse(a.value.toString());
+    a = snapshot.child("${Constant.NUMBER_OF_HOLES}");
+    this.numberOfHoles = int.parse(a.value.toString());
 
   }
 
@@ -82,13 +91,15 @@ class CustomizedParameters {
         '${Constant.USER}/${this.fieldName}/${Constant.CUSTOMIZED_PARAMETERS}');
     await ref.update({
       "${Constant.FIELD_CAPACITY}": this.fieldCapacity,
+      "${Constant.ACREAGE}": this.acreage,
       "${Constant.IRRIGATION_DURATION}": this.irrigationDuration,
       "${Constant.DRIP_RATE}": this.dripRate,
       "${Constant.DISTANCE_BETWEEN_HOLES}": this.distanceBetweenHoles,
       "${Constant.DISTANCE_BETWEEN_ROWS}": this.distanceBetweenRows,
       "${Constant.SCALE_RAIN}": this.scaleRain,
       "${Constant.FERTILIZATION_LEVEL}": this.fertilizationLevel,
-      "${Constant.AUTO_IRRIGATION}": this.autoIrrigation
+      "${Constant.AUTO_IRRIGATION}": this.autoIrrigation,
+      "${Constant.NUMBER_OF_HOLES}": this.numberOfHoles,
     });
   }
 }

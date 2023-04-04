@@ -55,23 +55,14 @@ class MeasuredData {
         '$userName/$fieldName/${Constant.MEASURED_DATA}/$dayPath')
         .get();
     if (snapshot.exists) {
-      var length = snapshot.children.length;
-      if (length > 3) {
-        data = snapshot.children.elementAt(length - 3);
-      } else {
-        data = snapshot.children.elementAt(0);
-      }
+      //var length = snapshot.children.length;
+      data = snapshot.children.last;
     } else {
       snapshot = await FirebaseDatabase.instance
           .ref('$userName/$fieldName/${Constant.MEASURED_DATA}')
           .get();
       var a = snapshot.children.last; // di den ngay muon nhat
-      var length = a.children.length;
-      if (length > 2) {
-        var lastData = a.children.elementAt(length - 3);
-        data = lastData;
-      } else
-        data = a.children.elementAt(0);
+      data = a.children.last;
     }
     var relativeHumidity = double.parse(
         data.child('${Constant.RELATIVE_HUMIDITY}').value.toString());

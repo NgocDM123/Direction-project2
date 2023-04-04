@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../model/customized_parameters.dart';
 import '../model/field.dart';
@@ -6,7 +7,6 @@ import 'detail_irrigation.dart';
 import '../constant.dart';
 import '../styles.dart';
 
-enum ParameterNames { potentialYield, iLA, rgr, autoIrrigation }
 const double _sliderHeight = 175;
 
 class CustomizedParametersPage extends StatefulWidget {
@@ -20,7 +20,7 @@ class CustomizedParametersPage extends StatefulWidget {
 
 class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
   final Field field;
-  bool timePicker = false;
+  bool _displayConfirmButton = true;
 
   _CustomizedParametersPageState(this.field);
 
@@ -31,7 +31,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
 
   void _displayTimePicker() {
     setState(() {
-      this.timePicker = true;
+      _displayConfirmButton = true;
     });
   }
 
@@ -44,7 +44,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
       body: Stack(
         children: [
           _renderParameters(),
-          _renderConfirmButton(),
+          if (_displayConfirmButton) _renderConfirmButton(),
         ],
       ),
     );
@@ -52,8 +52,10 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
 
   Widget _renderParameters() {
     List<Widget> result = [];
+    result.add(_renderAcreageTextField());
     result.add(_renderIrrigationDurationSlider());
     result.add(_renderDripRateSlider());
+    result.add(_renderNumberOfHoleTextField());
     result.add(_renderDistanceBetweenHolesSlider());
     result.add(_renderDistanceBetweenRowsSlider());
     result.add(_renderFieldCapacitySlider());
@@ -69,6 +71,63 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     );
   }
 
+  Widget _renderAcreageTextField() {
+    return Container(
+      child: Column(
+        children: [
+          Text(
+            'Acreage: ${this.field.customizedParameters.acreage} (m2)',
+            style: Styles.locationTileTitleLight,
+            textAlign: TextAlign.left,
+          ),
+          TextField(
+            onSubmitted: (text) {
+              this.field.customizedParameters.acreage = double.parse(text);
+            },
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter(RegExp(r'[0-9.]'), allow: true)
+            ],
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hoverColor: Colors.blue,
+              labelText: '${this.field.fieldName}',
+              hintText: 'Enter acreage',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _renderNumberOfHoleTextField() {
+    return Container(
+      child: Column(
+        children: [
+          Text(
+            '${Constant.NUMBER_OF_HOLES_DISPLAY}: ${this.field.customizedParameters.numberOfHoles} (holes)',
+            style: Styles.locationTileTitleLight,
+            textAlign: TextAlign.left,
+          ),
+          TextField(
+            onSubmitted: (text) {
+              this.field.customizedParameters.numberOfHoles = int.parse(text);
+            },
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter(RegExp(r'[0-9]'), allow: true)
+            ],
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hoverColor: Colors.blue,
+              labelText: '${this.field.fieldName}',
+              hintText: 'Enter the number of drip holes',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _renderAutoIrrigationSwitch() {
     return Container(
@@ -118,20 +177,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     );
   }
 
-  Widget _renderSlider(CustomizedParameters customizedParameters) {
-    return ListView.builder(
-      itemCount: 4,
-        itemBuilder: _listViewItemBuilder
-    );
-  }
-
-  Widget _listViewItemBuilder (BuildContext context, int index) {
-    return Container(
-
-    );
-  }
-
-  Widget _renderFieldCapacitySlider () {
+  Widget _renderFieldCapacitySlider() {
     return Container(
       child: Column(
         children: [
@@ -169,7 +215,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     );
   }
 
-  Widget _renderIrrigationDurationSlider () {
+  Widget _renderIrrigationDurationSlider() {
     return Container(
       child: Column(
         children: [
@@ -207,7 +253,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     );
   }
 
-  Widget _renderDripRateSlider () {
+  Widget _renderDripRateSlider() {
     return Container(
       child: Column(
         children: [
@@ -233,7 +279,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
                 });
               },
               min: 0,
-              max: 3,
+              max: 8,
               divisions: 100,
               label: '${Constant.DRIP_RATE_DISPLAY}'),
         ],
@@ -245,7 +291,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     );
   }
 
-  Widget _renderDistanceBetweenHolesSlider () {
+  Widget _renderDistanceBetweenHolesSlider() {
     return Container(
       child: Column(
         children: [
@@ -283,7 +329,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     );
   }
 
-  Widget _renderDistanceBetweenRowsSlider () {
+  Widget _renderDistanceBetweenRowsSlider() {
     return Container(
       child: Column(
         children: [
@@ -321,7 +367,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     );
   }
 
-  Widget _renderScaleRainSlider () {
+  Widget _renderScaleRainSlider() {
     return Container(
       child: Column(
         children: [
@@ -359,7 +405,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     );
   }
 
-  Widget _renderFertilizerLevelSlider () {
+  Widget _renderFertilizerLevelSlider() {
     return Container(
       child: Column(
         children: [
@@ -396,7 +442,6 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
       padding: EdgeInsets.only(bottom: 20, top: 10),
     );
   }
-
 
   void _navigateToDetailIrrigationPage(BuildContext context, Field field) {
     Navigator.push(context,

@@ -28,10 +28,13 @@ class Constant {
   static const elevation = 295.0; // do cao so voi muc nuoc bien
   static const height = 2.5; // do cao
   static const nSoilLayer = 5;
+  static const ACREAGE = 'acreage';
   static const IRRIGATION_DURATION = 'irrigationDuration';
   static const IRRIGATION_DURATION_DISPLAY = 'Duration of irrigation (hour)';
   static const DRIP_RATE = 'dripRate';
-  static const DRIP_RATE_DISPLAY = 'Drip rate of single hole';
+  static const DRIP_RATE_DISPLAY = 'Drip rate of single hole (l/h/hole)';
+  static const NUMBER_OF_HOLES = 'numberOfHoles';
+  static const NUMBER_OF_HOLES_DISPLAY = 'The number of drip holes';
   static const DISTANCE_BETWEEN_HOLES = 'distanceBetweenHole';
   static const DISTANCE_BETWEEN_HOLES_DISPLAY = 'Distance between holes (cm)';
   static const DISTANCE_BETWEEN_ROWS = 'distanceBetweenRow';
@@ -42,6 +45,8 @@ class Constant {
   static const FERTILIZATION_LEVEL_DISPLAY = 'Reduce or increase fertilizer level (%)';
   static const IRRIGATION_FOR_THE_NEXT_DAY = 'irrigationForTheNextDay';
   static const IRRIGATION_INFORMATION = 'irrigation_information';
+  static const AMOUNT_OF_IRRIGATION = 'amount';
+
   static String format(int n) {
     if (n < 10)
       return '0$n';
