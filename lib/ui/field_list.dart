@@ -107,8 +107,10 @@ class _FieldListState extends State<FieldList> {
           margin: EdgeInsets.only(top: 20.0, left: 15, right: 15),
           child: Stack(
             children: [
-              Text(field.fieldName,
-                  textAlign: TextAlign.left, style: Styles.fieldName),
+             Container(
+               alignment: Alignment.centerLeft,
+               child:  Text(field.fieldName, style: Styles.fieldName),
+             ),
               Container(
                 alignment: Alignment.centerRight,
                 child: PopupMenuButton(
@@ -198,7 +200,7 @@ class _FieldListState extends State<FieldList> {
     var a = FirebaseDatabase.instance.ref("${Constant.USER}/$fieldName");
     a.remove();
     final String directory = (await getApplicationSupportDirectory()).path;
-    final path = "$directory/$fieldName.csv";
+    final path = "$directory/${Constant.USER}/$fieldName.csv";
     //final csvFile = new File(path).delete();
     await File(path).delete();
     setState(() {});

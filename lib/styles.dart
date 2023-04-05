@@ -11,7 +11,7 @@ class Styles {
   static final Color textColorBright = _hexToColor('FFFFFF');
   static final Color accentColor = _hexToColor('FF0000');
   static final Color blueColor = _hexToColor('3c556c');
-  static final String _fontNameDefault = 'Muli'
+  static final String _fontNameDefault = 'Roboto'
       '';
   static final navBarTitle = TextStyle(
     fontFamily: _fontNameDefault,
@@ -21,6 +21,10 @@ class Styles {
     fontSize: _textSizeLarge,
     color: Colors.white,
   );
+  static final fieldDetailButton = TextStyle(
+      fontFamily: _fontNameDefault,
+      fontSize: _textSizeLarge,
+      color: Colors.blue);
   static final textDefault = TextStyle(
     fontFamily: _fontNameDefault,
     fontSize: _textSizeDefault,
@@ -35,7 +39,7 @@ class Styles {
   static final locationTileTitleLight = TextStyle(
     fontFamily: _fontNameDefault,
     fontSize: _textSizeLarge,
-    color: _textColorStrong,
+    color: blueColor,
   );
   static final locationTileTitleDark = TextStyle(
     fontFamily: _fontNameDefault,
@@ -54,16 +58,21 @@ class Styles {
   );
 
   static final timeTitle = TextStyle(
-    fontFamily: _fontNameDefault,
-    fontSize: _textSizeDefault,
-    color: blueColor
-  );
+      fontFamily: _fontNameDefault,
+      fontSize: _textSizeDefault,
+      color: blueColor);
 
   static final fieldName = TextStyle(
-    fontFamily: _fontNameDefault,
-    fontSize: _textSizeLarge,
-    color: blueColor
-  );
+      fontFamily: _fontNameDefault, fontSize: _textSizeLarge, color: blueColor);
+
+  static final fieldDetailButtonStyle = ButtonStyle(
+      padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(10)),
+      backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+      shadowColor: MaterialStateProperty.all<Color>(blueColor),
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      )));
 
   static Color _hexToColor(String code) {
     return Color(int.parse(code.substring(0, 6), radix: 16) + 0xFF000000);

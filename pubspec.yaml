@@ -118,9 +118,10 @@ flutter:
       fonts:
         - asset: assets/fonts/Muli-Light.ttf
           weight: 300
-    - family: Lora
+    - family: Roboto
       fonts:
-        - asset: assets/fonts/Lora-SemiBoldItalic.ttf
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 300
 
 
 flutter_intl:                                   # Add this line

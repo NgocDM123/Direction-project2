@@ -62,37 +62,53 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     result.add(_renderScaleRainSlider());
     result.add(_renderFertilizerLevelSlider());
     result.add(_renderAutoIrrigationSwitch());
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: result,
+    return Container(
+      width: 400,
+      alignment: Alignment.center,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: result,
+        ),
       ),
     );
   }
 
   Widget _renderAcreageTextField() {
     return Container(
+      padding: EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: [
-          Text(
-            'Acreage: ${this.field.customizedParameters.acreage} (m2)',
-            style: Styles.locationTileTitleLight,
-            textAlign: TextAlign.left,
+          Container(
+            //alignment: Alignment.topLeft,
+            child: Text(
+              'Acreage: ${this.field.customizedParameters.acreage} (m2)',
+              style: Styles.locationTileTitleLight,
+            ),
           ),
-          TextField(
-            onSubmitted: (text) {
-              this.field.customizedParameters.acreage = double.parse(text);
-            },
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter(RegExp(r'[0-9.]'), allow: true)
-            ],
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hoverColor: Colors.blue,
-              labelText: '${this.field.fieldName}',
-              hintText: 'Enter acreage',
+          SizedBox(
+            width: 350,
+            height: 70,
+            child: TextField(
+              onSubmitted: (text) {
+                this.field.customizedParameters.acreage = double.parse(text);
+              },
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter(RegExp(r'[0-9.]'), allow: true)
+              ],
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(
+                        color: Colors.blue.withOpacity(0.3),
+                        width: 2.0
+                    )
+                ),
+                //labelText: '${this.field.fieldName}',
+                hintText: 'Enter the acreage',
+              ),
             ),
           ),
         ],
@@ -102,26 +118,39 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
 
   Widget _renderNumberOfHoleTextField() {
     return Container(
+      padding: EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: [
-          Text(
-            '${Constant.NUMBER_OF_HOLES_DISPLAY}: ${this.field.customizedParameters.numberOfHoles} (holes)',
-            style: Styles.locationTileTitleLight,
-            textAlign: TextAlign.left,
+          Container(
+            padding: EdgeInsets.only(bottom: 10),
+            child: Text(
+              '${Constant.NUMBER_OF_HOLES_DISPLAY}: ${this.field.customizedParameters.numberOfHoles} (holes)',
+              style: Styles.locationTileTitleLight,
+              textAlign: TextAlign.left,
+            ),
           ),
-          TextField(
-            onSubmitted: (text) {
-              this.field.customizedParameters.numberOfHoles = int.parse(text);
-            },
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter(RegExp(r'[0-9]'), allow: true)
-            ],
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hoverColor: Colors.blue,
-              labelText: '${this.field.fieldName}',
-              hintText: 'Enter the number of drip holes',
+          SizedBox(
+            width: 350,
+            height: 70,
+            child: TextField(
+              onSubmitted: (text) {
+                this.field.customizedParameters.numberOfHoles = int.parse(text);
+              },
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter(RegExp(r'[0-9]'), allow: true)
+              ],
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(
+                    color: Colors.blue.withOpacity(0.3),
+                    width: 2.0
+                  )
+                ),
+                //labelText: '${this.field.fieldName}',
+                hintText: 'Enter the number of drip holes',
+              ),
             ),
           ),
         ],

@@ -97,18 +97,84 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
     }
   }
 
+  // Widget _renderWeatherData() {
+  //   return Container(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.end,
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text("Radiation: ${this.field.measuredData.radiation}"),
+  //         Text("Rain fall: ${this.field.measuredData.rainFall}"),
+  //         Text(
+  //             "Relative humidity: ${this.field.measuredData.relativeHumidity}"),
+  //         Text("Temperature: ${this.field.measuredData.temperature}"),
+  //         Text("Wind speed: ${this.field.measuredData.windSpeed}")
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _renderWeatherData() {
     return Container(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Radiation: ${this.field.measuredData.radiation}"),
-          Text("Rain fall: ${this.field.measuredData.rainFall}"),
-          Text(
-              "Relative humidity: ${this.field.measuredData.relativeHumidity}"),
-          Text("Temperature: ${this.field.measuredData.temperature}"),
-          Text("Wind speed: ${this.field.measuredData.windSpeed}")
+          Container(
+            padding: EdgeInsets.only(top: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _decoratedContainer(
+                    "Radiation", this.field.measuredData.radiation.toString()),
+                _decoratedContainer(
+                    "Rain fall", this.field.measuredData.rainFall.toString())
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(top: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _decoratedContainer("Relative humidity",
+                    this.field.measuredData.relativeHumidity.toString()),
+                _decoratedContainer("Temperature",
+                    this.field.measuredData.temperature.toString())
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(top: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _decoratedContainer(
+                    "Wind speed", this.field.measuredData.windSpeed.toString()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _decoratedContainer(String title, String value) {
+    return Container(
+      height: 100,
+      width: 150,
+      decoration: BoxDecoration(
+          borderRadius: new BorderRadius.circular(10),
+          //border: Border.all(color: Styles.blueColor),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                blurRadius: 5.0, offset: Offset(0, 2), color: Styles.blueColor),
+          ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("$title"),
+          Text("$value"),
         ],
       ),
     );
@@ -131,16 +197,17 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
   }
 
   Widget _renderBody() {
-    return Container(
+    return SingleChildScrollView(
+        child: Container(
       child: Column(
         children: [
+          _renderWeatherData(),
           (this.field.irrigationCheck)
               ? _irrigatingBody()
               : _notIrrigatingBody(),
-          _renderWeatherData()
         ],
       ),
-    );
+    ));
   }
 
   //be irrigating
@@ -243,25 +310,6 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
     );
   }
 
-  // Future<void> _displayTimeDialog() async {
-  //   final TimeOfDay? time = await showTimePicker(
-  //     context: context,
-  //     initialTime: TimeOfDay.now(),
-  //     initialEntryMode: TimePickerEntryMode.input,
-  //   );
-  //   if (time != null) {
-  //     setState(() {
-  //       DatabaseReference ref = FirebaseDatabase.instance.ref(
-  //           '${Constant.USER}/${this.field.fieldName}/${Constant.IRRIGATION_INFORMATION}');
-  //       ref.update({
-  //         "time":
-  //             "${this.selectedStartTime.hour}:${this.selectedStartTime.minute}",
-  //         "amount": 0.0
-  //       });
-  //     });
-  //   }
-  // }
-
   _dateTimePickerWidget(BuildContext context) async {
     return DatePicker.showDateTimePicker(
       context,
@@ -282,7 +330,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
     return Container(
       child: TextField(
         onSubmitted: (value) {
-          this.amount = double.parse(value);
+          if (value.isNotEmpty) this.amount = double.parse(value);
         },
         keyboardType: TextInputType.number,
         inputFormatters: <TextInputFormatter>[
@@ -297,15 +345,21 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
     );
   }
 
-  double _toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
-
   Widget _renderConfirmButton() {
     return Container(
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.center,
+      padding: EdgeInsets.all(20),
       child: ElevatedButton(
+        style: ButtonStyle(
+            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ))),
         child: Text(
           'Confirm irrigation',
-          style: Styles.timeTitle,
+          style: Styles.locationTileTitleLight,
         ),
         onPressed: () => {
           setState(() {

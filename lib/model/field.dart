@@ -15,7 +15,7 @@ import '../constant.dart';
 import 'customized_parameters.dart';
 import 'measured_data.dart';
 
-final double _APPi = 0.80 *
+final double _APPi = 1.00 *
     1.00; // Area per plant (row x interrow spacing) (m2); PC edited the value from 0.60*0.60 to 0.80*1.00 based on data from BRR2021-Y1.
 final int _nsl = 5; // number of soil layers
 //double _depth = 0.9; // soil depth in m
@@ -247,7 +247,7 @@ class Field {
   Future<List<List<dynamic>>> loadAllWeatherDataFromCsvFile() async {
     List<List<dynamic>> weatherData = [];
     final String directory = (await getApplicationSupportDirectory()).path;
-    final path = "$directory/${this.fieldName}.csv";
+    final path = "$directory/${Constant.USER}/${this.fieldName}.csv";
     final csvFile = new File(path).openRead();
     weatherData = await csvFile
         .transform(utf8.decoder)
@@ -261,7 +261,7 @@ class Field {
 
   //todo predict yield of the field day by day (test)
   Future<List<double>> predictYield() async {
-    return yields = [0, 1, 2, 3, 4];
+    return yields = _results[0];
   }
 
   //get Weather data at time t (DateTime) directly from firebase
@@ -376,8 +376,18 @@ class Field {
       []
     ];
     String csvData = ListToCsvConverter().convert(data);
-    final String directory = (await getApplicationSupportDirectory()).path;
-    final path = "$directory/${this.fieldName}.csv";
+    final String directoryPath = (await getApplicationSupportDirectory()).path;
+    final Directory _userDirectory =
+        Directory('$directoryPath/${Constant.USER}');
+    final String _userDirectoryPath;
+    if (await _userDirectory.exists()) {
+      _userDirectoryPath = _userDirectory.path;
+    } else {
+      final Directory _newDirectory =
+          await _userDirectory.create(recursive: true);
+      _userDirectoryPath = _newDirectory.path;
+    }
+    final path = "$_userDirectoryPath/${this.fieldName}.csv";
     final File file = File(path);
     await file.writeAsString(csvData);
   }
@@ -385,8 +395,11 @@ class Field {
   // todo update weather csv file
   writeWeatherDataToCsvFile() async {
     final String directory = (await getApplicationSupportDirectory()).path;
-    final path = "$directory/${this.fieldName}.csv";
+    final path = "$directory/${Constant.USER}/${this.fieldName}.csv";
     final File file = File(path);
+    if (await file.exists()) {
+      await createWeatherDataFile();
+    }
 
     //checking for add new data from database
     List<List<dynamic>> listData = [];
@@ -426,12 +439,13 @@ class Field {
     if (this.customizedParameters.autoIrrigation) _updateAutoIrrigationInfo();
     // if (this.customizedParameters.autoIrrigation) updateIrrigationToDb();
   }
+
   double getIrrigationAmount() {
-     var length = _results[2].length;
+    var length = _results[2].length;
     double irr = (length > 1)
         ? _results[2].last - _results[2][length - 2]
         : _results[2][0];
-    return irr;
+    return irr * 0.1;
   }
 
   String getIrrigationTime() {
@@ -447,7 +461,9 @@ class Field {
     irr *= 0.1; // convert to l/m2
     var duration = irr *
         this.customizedParameters.acreage /
-        this.customizedParameters.dripRate / this.customizedParameters.numberOfHoles * 3600; //convert to second
+        (this.customizedParameters.dripRate *
+            this.customizedParameters.numberOfHoles) *
+        3600; //convert to second
     var day = _getDay(_results[8].last);
     String formattedData = DateFormat('yyyy-MM-dd').format(day);
     final Map<String, dynamic> updates = {};
@@ -592,6 +608,7 @@ class Field {
     _iend = _weatherData[_weatherData.length - 1][_iDOY];
     _autoIrrigateTime = -1;
     var w = ode2initValues(); //initialize to start simulate
+    _results = [];
     for (var i = 0; i < 9; i++) {
       _results.add([]);
     }

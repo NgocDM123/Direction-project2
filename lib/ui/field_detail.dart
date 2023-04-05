@@ -1,6 +1,7 @@
 import 'package:direction/ui/predicted_yield_page.dart';
 import 'package:flutter/material.dart';
 
+import '../constant.dart';
 import '../model/field.dart';
 import 'customized_parameters_page.dart';
 import 'detail_irrigation.dart';
@@ -22,44 +23,43 @@ class _FieldDetailState extends State<FieldDetail> {
 
   @override
   void initState() {
+    //this.field.runModel();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(this.field.fieldName),
-      ),
-      body: _loadDataBeforeRenderBody(context, this.field)
-    );
+        appBar: AppBar(
+          title: Text(this.field.fieldName),
+        ),
+        body: _loadDataBeforeRenderBody(context, this.field));
   }
 
   Widget _loadDataBeforeRenderBody(BuildContext context, Field field) {
     return FutureBuilder(
       future: this.field.runModel(),
       builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '${snapshot.error} occurred',
-                style: TextStyle(fontSize: 18),
-              ),
-            );
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            return _renderBody(context, field);
-          }
+        if (snapshot.hasError) {
           return Center(
-            child: CircularProgressIndicator(),
+            child: Text(
+              '${snapshot.error} occurred',
+              style: TextStyle(fontSize: 18),
+            ),
           );
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          return _renderBody(context, field);
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
       },
     );
   }
 
   Widget _renderBody(BuildContext context, Field field) {
     var result = <Widget>[];
-    //result.add(_renderRainFall());
-    result.add(_customizeContainer(_renderPredictYield()));
+    result.add(_renderPredictYield());
     result.add(_renderIrrigation());
     result.add(_renderEditField());
     return SingleChildScrollView(
@@ -71,40 +71,36 @@ class _FieldDetailState extends State<FieldDetail> {
     );
   }
 
-  Widget _customizeContainer(Widget child) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: new BorderRadius.circular(10),
-          //border: Border.all(color: Styles.blueColor),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                blurRadius: 5.0, offset: Offset(0, 2), color: Styles.blueColor),
-          ]),
-      height: 70,
-      padding: EdgeInsets.fromLTRB(25.0, 15.0, 15.0, 15.0),
-      margin: EdgeInsets.only(top: 20.0, left: 15, right: 15),
-      child: child,
-    );
-  }
 
   Widget _renderEditField() {
     return Container(
-      child: GestureDetector(
-        child: Container(
-          child: Text('Edit ${this.field.fieldName}',
-              style: Styles.locationTileTitleDark),
-          // height: 60,
-          // width: 500,
-          color: Colors.blue,
-          alignment: Alignment.center,
-        ),
-        onTap: () {
-          _navigateToCustomizedParametersPage(context, field);
-        },
-      ),
-      padding: EdgeInsets.only(left: 15, top: 10, right: 15, bottom: 15),
-    );
+        padding: EdgeInsets.only(left: 15, top: 10, right: 15, bottom: 15),
+        child: SizedBox(
+          height: 70,
+          child: ElevatedButton(
+            style: Styles.fieldDetailButtonStyle,
+            // child: Text(
+            //   "Edit ${this.field.fieldName}",
+            //   style: Styles.fieldDetailButton,
+            // ),
+            child: Stack(
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text("Edit ${this.field.fieldName}",
+                      style: Styles.fieldDetailButton),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+                ),
+              ],
+            ),
+            onPressed: () =>
+                _navigateToCustomizedParametersPage(context, this.field),
+          ),
+        ));
   }
 
   Future<void> _navigateToCustomizedParametersPage(
@@ -123,29 +119,56 @@ class _FieldDetailState extends State<FieldDetail> {
 
   Widget _renderPredictYield() {
     return Container(
-        child: ElevatedButton(
-      style: ButtonStyle(),
-      child:
-          Text('Predict Yield of ${this.field.fieldName} field'.toUpperCase()),
-      onPressed: () => _navigateToPredictedYieldPage(
-          context, this.field), // todo show the predicted yield
-    ));
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: SizedBox(
+          height: 70,
+          child: ElevatedButton(
+            style: Styles.fieldDetailButtonStyle,
+            child: Stack(
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text('Predict the yield of ${this.field.fieldName}',
+                      style: Styles.fieldDetailButton),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+                ),
+              ],
+            ),
+            onPressed: () => _navigateToPredictedYieldPage(
+                context, this.field), // todo show the predicted yield
+          )),
+    );
     //height: 100,
   }
 
   Widget _renderIrrigation() {
     return Container(
         padding: EdgeInsets.only(left: 15, top: 10, right: 15, bottom: 15),
-        child: GestureDetector(
-          child: Container(
-            child: Text('Monitoring irrigation',
-                style: Styles.locationTileTitleDark),
-            height: 60,
-            width: 500,
-            color: Colors.blue,
-            alignment: Alignment.center,
+        child: SizedBox(
+          height: 70,
+          child: ElevatedButton(
+            style: Styles.fieldDetailButtonStyle,
+              child: Stack(
+                children: [
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.only(left: 10),
+                    child: Text("Monitoring irrigation",
+                        style: Styles.fieldDetailButton),
+                  ),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+                  ),
+                ],
+              ),
+            onPressed: () =>
+                _navigateToDetailIrrigationPage(context, this.field),
           ),
-          onTap: () => _navigateToDetailIrrigationPage(context, this.field),
         ));
   }
 
@@ -154,17 +177,4 @@ class _FieldDetailState extends State<FieldDetail> {
         MaterialPageRoute(builder: (context) => DetailIrrigation(field)));
   }
 
-  Widget _renderRainFall() {
-    var result;
-    this.field.measuredData.getAllRainfallFromDb().then((value) {
-      result = value;
-      print('------------------$result');
-    });
-    return Container(
-      child: ElevatedButton(
-        child: Text('Rain Fall'),
-        onPressed: () => null,
-      ),
-    );
-  }
 }
