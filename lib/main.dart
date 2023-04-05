@@ -3,7 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 //TODO ios language support needs additional steps in xcode, see website above
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart'; //generate code for language switch
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+ //generate code for language switch
 
 //database management
 import 'dart:io' show Platform;

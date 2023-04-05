@@ -1,7 +1,6 @@
 import 'package:direction/ui/predicted_yield_page.dart';
 import 'package:flutter/material.dart';
 
-import '../constant.dart';
 import '../model/field.dart';
 import 'customized_parameters_page.dart';
 import 'detail_irrigation.dart';
@@ -62,12 +61,40 @@ class _FieldDetailState extends State<FieldDetail> {
     result.add(_renderPredictYield());
     result.add(_renderIrrigation());
     result.add(_renderEditField());
+    result.add(_renderDownloadWeatherData());
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: result,
       ),
+    );
+  }
+
+  Widget _renderDownloadWeatherData() {
+    return Container(
+      padding: EdgeInsets.only(left: 15, top: 10, right: 15, bottom: 15),
+        child: SizedBox(
+          height: 70,
+          child: ElevatedButton(
+            style: Styles.fieldDetailButtonStyle,
+            child: Stack(
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text("Download weather data file",
+                      style: Styles.fieldDetailButton),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+                ),
+              ],
+            ),
+            onPressed: () => this.field.downloadWeatherDataFile(),
+          ),
+        )
     );
   }
 

@@ -1,22 +1,20 @@
-// import 'dart:html';
 import 'dart:convert';
-import 'dart:ffi';
+import 'dart:math';
 import 'dart:io';
-
+import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:csv/csv.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import '../firebase_options.dart';
-import 'dart:math';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../constant.dart';
 import 'customized_parameters.dart';
 import 'measured_data.dart';
 
 final double _APPi = 1.00 *
-    1.00; // Area per plant (row x interrow spacing) (m2); PC edited the value from 0.60*0.60 to 0.80*1.00 based on data from BRR2021-Y1.
+    1.00; // Area per plant (row x interRow spacing) (m2); PC edited the value from 0.60*0.60 to 0.80*1.00 based on data from BRR2021-Y1.
 final int _nsl = 5; // number of soil layers
 //double _depth = 0.9; // soil depth in m
 late final double _lw = 0.9 / _nsl; //depth/_nsl;// thickness of a layer in m
@@ -397,10 +395,9 @@ class Field {
     final String directory = (await getApplicationSupportDirectory()).path;
     final path = "$directory/${Constant.USER}/${this.fieldName}.csv";
     final File file = File(path);
-    if (await file.exists()) {
+    if (await file.exists() == false) {
       await createWeatherDataFile();
     }
-
     //checking for add new data from database
     List<List<dynamic>> listData = [];
     final csvFile = new File(path).openRead();
@@ -427,6 +424,37 @@ class Field {
         });
     String csvData = ListToCsvConverter().convert(data);
     await file.writeAsString(csvData, mode: FileMode.append);
+  }
+
+  downloadWeatherDataFile() async {
+    String? directory = "";
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+      //add more permission to request here.
+    ].request();
+    if (statuses[Permission.storage]!.isGranted) {
+      var dir = await DownloadsPathProvider.downloadsDirectory;
+      if (dir != null) {
+        String saveName = "${this.fieldName}.csv";
+        var directoryPath = dir.path;
+
+        final Directory _userDirectory =
+            Directory('$directoryPath/${Constant.USER}');
+        final String _userDirectoryPath;
+        if (await _userDirectory.exists()) {
+          _userDirectoryPath = _userDirectory.path;
+        } else {
+          final Directory _newDirectory =
+              await _userDirectory.create(recursive: true);
+          _userDirectoryPath = _newDirectory.path;
+        }
+
+        String savePath = _userDirectoryPath + "/$saveName";
+        final File file = File(savePath);
+        String csvData = ListToCsvConverter().convert(_weatherData);
+        await file.writeAsString(csvData);
+      }
+    }
   }
 
   runModel() async {
