@@ -195,7 +195,7 @@ class Field {
   } //(done)
 
   Future<void> getMeasuredDataFromDb() async {
-    measuredData.updateDataFromDb();
+    await measuredData.updateDataFromDb();
   }
 
   Future<void> getIrrigationCheckFromDb() async {
@@ -258,9 +258,59 @@ class Field {
   }
 
   //todo predict yield of the field day by day (test)
-  Future<List<double>> predictYield() async {
+  List<double> predictYield() {
     return yields = _results[0];
   }
+
+  List<double> getTopSoilWetness() {
+    List<double> r = _results[1];
+    var cr =
+        r.map((el) => double.parse((100.0 * relTheta(el)).toStringAsFixed(2)));
+    return cr.toList();
+  }
+
+  List<double> getIrrigation() {
+    List<double> r = List.generate(
+        _results[2].length, (index) => _results[2][index].roundToDouble());
+    return r;
+  }
+
+  List<double> getDoy() {
+    List<double> r = List.generate(
+        _results[8].length, (index) => _results[8][index].roundToDouble());
+    return r;
+  }
+
+  List<double> getLai() {
+    List<double> r = List.generate(_results[3].length,
+        (index) => double.parse((_results[3][index]).toStringAsFixed(2)));
+    return r;
+  }
+
+  List<double> getCLab() {
+    List<double> r = List.generate(_results[4].length,
+        (index) => double.parse((_results[4][index]).toStringAsFixed(2)));
+    return r;
+  }
+
+  List<double> getPhotoSynthesis() {
+    List<double> r = List.generate(_results[5].length,
+            (index) => double.parse((_results[5][index]).toStringAsFixed(2)));
+    return r;
+  }
+
+  List<double> getTopsoilNContent() {
+    List<double> r = List.generate(_results[6].length,
+            (index) => double.parse((_results[6][index]).toStringAsFixed(2)));
+    return r;
+  }
+
+  List<double> getNStatus() {
+    List<double> r = List.generate(_results[7].length,
+            (index) => double.parse((_results[7][index]).toStringAsFixed(2)));
+    return r;
+  }
+
 
   //get Weather data at time t (DateTime) directly from firebase
   Future<List<double>> getWeatherDataFromDb(DateTime t) async {
@@ -473,12 +523,13 @@ class Field {
     double irr = (length > 1)
         ? _results[2].last - _results[2][length - 2]
         : _results[2][0];
-    return irr * 0.1;
+    return irr * 0.1; //convert from m3/ha to l/m2
   }
 
   String getIrrigationTime() {
     var day = _getDay(_results[8].last);
-    return day.toString();
+    String formattedDate = DateFormat('dd-MM-yyyy').format(day);
+    return formattedDate;
   }
 
   _updateAutoIrrigationInfo() {
@@ -758,7 +809,7 @@ class Field {
         ? (multiplyLists(thetaL, krootL))
                 .reduce((value, element) => value + element) /
             Kroot
-        : thetaL[0];
+        : thetaL[0]; //equivalent soil water potential
 
     //water stress
     fWstress(minv, maxv, the) {
@@ -807,7 +858,7 @@ class Field {
       irrigation += _autoIrrigate;
     }
 
-    final precipitation = this.customizedParameters.scaleRain * wd[0] +
+    final precipitation = this.customizedParameters.scaleRain / 100 * wd[0] +
         irrigation; //return ([rain, temp, ppfd, et0, irri]) (amount of the rain ?)
 
     // Transpiration
@@ -872,7 +923,8 @@ class Field {
     late final List<double> _NminR_l = new List<double>.generate(
         _nsl,
         (d) =>
-            this.customizedParameters.fertilizationLevel *
+            this.customizedParameters.fertilizationLevel /
+            100 *
             36 /
             (_lvol * _BD) /
             pow(d + 1, 2)); //todo highly _nsl dependent
@@ -1099,7 +1151,7 @@ class Field {
       //...RLR_l, ...NRTR_l, ...dThetaDt, ...NcontR_l, ...NuptR_l
       yi[9 + 2 * _nsl + i] = iTheta[i];
       yi[9 + 3 * _nsl + i] =
-          iNcont[i] * this.customizedParameters.fertilizationLevel;
+          iNcont[i] * this.customizedParameters.fertilizationLevel / 100;
       yi[9 + 4 * _nsl + i] = _cuttingDryMass * 30.0 / _nsl;
     }
 

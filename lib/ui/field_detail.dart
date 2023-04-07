@@ -17,6 +17,7 @@ class FieldDetail extends StatefulWidget {
 
 class _FieldDetailState extends State<FieldDetail> {
   final Field field;
+  bool loading = false;
 
   _FieldDetailState(this.field);
 
@@ -24,6 +25,7 @@ class _FieldDetailState extends State<FieldDetail> {
   void initState() {
     //this.field.runModel();
     super.initState();
+    _loadData();
   }
 
   @override
@@ -32,12 +34,12 @@ class _FieldDetailState extends State<FieldDetail> {
         appBar: AppBar(
           title: Text(this.field.fieldName),
         ),
-        body: _loadDataBeforeRenderBody(context, this.field));
+        body:_loadDataBeforeRenderBody(context, field));
   }
 
   Widget _loadDataBeforeRenderBody(BuildContext context, Field field) {
     return FutureBuilder(
-      future: this.field.runModel(),
+      future: _loadData(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -54,6 +56,11 @@ class _FieldDetailState extends State<FieldDetail> {
         );
       },
     );
+  }
+
+  _loadData() async {
+    await this.field.runModel();
+    await this.field.getMeasuredDataFromDb();
   }
 
   Widget _renderBody(BuildContext context, Field field) {
@@ -73,7 +80,7 @@ class _FieldDetailState extends State<FieldDetail> {
 
   Widget _renderDownloadWeatherData() {
     return Container(
-      padding: EdgeInsets.only(left: 15, top: 10, right: 15, bottom: 15),
+        padding: EdgeInsets.only(left: 15, top: 10, right: 15, bottom: 15),
         child: SizedBox(
           height: 70,
           child: ElevatedButton(
@@ -88,16 +95,17 @@ class _FieldDetailState extends State<FieldDetail> {
                 ),
                 Container(
                   alignment: Alignment.centerRight,
-                  child: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+                  child: Icon(
+                    Icons.download,
+                    color: Colors.blue,
+                  ),
                 ),
               ],
             ),
             onPressed: () => this.field.downloadWeatherDataFile(),
           ),
-        )
-    );
+        ));
   }
-
 
   Widget _renderEditField() {
     return Container(
@@ -120,7 +128,10 @@ class _FieldDetailState extends State<FieldDetail> {
                 ),
                 Container(
                   alignment: Alignment.centerRight,
-                  child: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.blue,
+                  ),
                 ),
               ],
             ),
@@ -161,7 +172,10 @@ class _FieldDetailState extends State<FieldDetail> {
                 ),
                 Container(
                   alignment: Alignment.centerRight,
-                  child: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.blue,
+                  ),
                 ),
               ],
             ),
@@ -179,20 +193,23 @@ class _FieldDetailState extends State<FieldDetail> {
           height: 70,
           child: ElevatedButton(
             style: Styles.fieldDetailButtonStyle,
-              child: Stack(
-                children: [
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(left: 10),
-                    child: Text("Monitoring irrigation",
-                        style: Styles.fieldDetailButton),
+            child: Stack(
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text("Monitoring irrigation",
+                      style: Styles.fieldDetailButton),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.blue,
                   ),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
-                  ),
-                ],
-              ),
+                ),
+              ],
+            ),
             onPressed: () =>
                 _navigateToDetailIrrigationPage(context, this.field),
           ),
@@ -203,5 +220,4 @@ class _FieldDetailState extends State<FieldDetail> {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => DetailIrrigation(field)));
   }
-
 }

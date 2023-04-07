@@ -97,23 +97,6 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
     }
   }
 
-  // Widget _renderWeatherData() {
-  //   return Container(
-  //     child: Column(
-  //       mainAxisAlignment: MainAxisAlignment.end,
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text("Radiation: ${this.field.measuredData.radiation}"),
-  //         Text("Rain fall: ${this.field.measuredData.rainFall}"),
-  //         Text(
-  //             "Relative humidity: ${this.field.measuredData.relativeHumidity}"),
-  //         Text("Temperature: ${this.field.measuredData.temperature}"),
-  //         Text("Wind speed: ${this.field.measuredData.windSpeed}")
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _renderWeatherData() {
     return Container(
       child: Column(
@@ -124,21 +107,12 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _decoratedContainer(
-                    "Radiation", this.field.measuredData.radiation.toString()),
-                _decoratedContainer(
-                    "Rain fall", this.field.measuredData.rainFall.toString())
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.only(top: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _decoratedContainer("Relative humidity",
-                    this.field.measuredData.relativeHumidity.toString()),
-                _decoratedContainer("Temperature",
-                    this.field.measuredData.temperature.toString())
+                    "Radiation",
+                    "${this.field.measuredData.radiation.toString()} [MJm^(-2)h^(-1)]",
+                    100,
+                    150),
+                _decoratedContainer("Rain fall",
+                    this.field.measuredData.rainFall.toString(), 100, 150)
               ],
             ),
           ),
@@ -148,7 +122,37 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _decoratedContainer(
-                    "Wind speed", this.field.measuredData.windSpeed.toString()),
+                    "Relative humidity",
+                    "${this.field.measuredData.relativeHumidity.toString()} [%]",
+                    100,
+                    150),
+                _decoratedContainer(
+                    "Temperature",
+                    "${this.field.measuredData.temperature.toString()} [℃]",
+                    100,
+                    150)
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(top: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _decoratedContainer(
+                    "Wind speed",
+                    "${this.field.measuredData.windSpeed.toString()} [m s^(-1)]",
+                    100,
+                    150),
+                Container(
+                  width: 150,
+                  height: 100,
+                  decoration: Styles.boxDecoration,
+                  child: (this.field.irrigationCheck)
+                      ? Lottie.asset('assets/animations/water-drop.json')
+                      : Lottie.asset(
+                          'assets/animations/energyshares-plant5.json'),
+                ),
               ],
             ),
           ),
@@ -157,18 +161,13 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
     );
   }
 
-  Widget _decoratedContainer(String title, String value) {
+  Widget _decoratedContainer(
+      String title, String value, double height, double width) {
     return Container(
-      height: 100,
-      width: 150,
-      decoration: BoxDecoration(
-          borderRadius: new BorderRadius.circular(10),
-          //border: Border.all(color: Styles.blueColor),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                blurRadius: 5.0, offset: Offset(0, 2), color: Styles.blueColor),
-          ]),
+      height: height,
+      width: width,
+      alignment: Alignment.center,
+      decoration: Styles.boxDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -191,6 +190,11 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
 
   Widget _renderIrrigationAmountByModel() {
     return Container(
+      height: 50,
+      width: 335,
+      margin: EdgeInsets.only(top: 20),
+      alignment: Alignment.center,
+      decoration: Styles.boxDecoration,
       child: Text(
           'The mount of irrigation today is ${this.field.nextIrrigationAmount()}'),
     );
@@ -226,6 +230,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
             ),
             height: 50,
             padding: const EdgeInsets.all(3.0),
+            margin: EdgeInsets.only(top: 30, bottom: 10),
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 borderRadius: new BorderRadius.circular(25),
@@ -243,10 +248,6 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
                 borderRadius: new BorderRadius.circular(25),
                 border: Border.all(color: Styles.blueColor)),
           ),
-          Container(
-              child: Center(
-            child: Lottie.asset('assets/animations/water-drop.json'),
-          )),
         ],
       ),
     );
@@ -262,48 +263,73 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
 
   Widget _autoNotIrrigation() {
     return Container(
-        width: 200,
         child: Column(
-          children: [
-            Lottie.asset('assets/animations/energyshares-plant5.json'),
-            Text(
-                "The amount of Irrigation for ${this.field.getIrrigationTime()}: ${this.field.getIrrigationAmount()} (l/m2)"),
-          ],
-        ));
+      children: [
+        Container(
+          height: 100,
+          width: 330,
+          padding: EdgeInsets.only(left: 10),
+          margin: EdgeInsets.only(top: 30),
+          decoration: Styles.boxDecoration,
+          alignment: Alignment.center,
+          child: Text(
+            "The amount of irrigation for ${this.field.getIrrigationTime()}: ${this.field.getIrrigationAmount()} (l/m2)",
+            style: Styles.textDefault,
+          ),
+        ),
+      ],
+    ));
   }
+
+  // "The amount of Irrigation for ${this.field.getIrrigationTime()}",
+  // "${this.field.getIrrigationAmount()} (l/m2)",
 
   Widget _manualNotIrrigation() {
     return Container(
+      height: 400,
+      width: 330,
+      padding: EdgeInsets.only(left: 10),
+      margin: EdgeInsets.only(top: 30),
+      decoration: Styles.boxDecoration,
+      alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            child: Lottie.asset('assets/animations/energyshares-plant5.json'),
-            height: 200,
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            alignment: Alignment.center,
+            child: Text(
+              'Start time: ${this.selectedStartTime}',
+              style: Styles.timeTitle,
+            ),
           ),
           Container(
-              padding: EdgeInsets.only(top: 70),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    'Start time: ${this.selectedStartTime}',
-                    style: Styles.timeTitle,
-                  ),
-                  OutlinedButton(
-                    child: Text(
-                      'Choose irrigation start time',
-                      style: Styles.timeTitle,
-                    ),
-                    onPressed: () => _dateTimePickerWidget(context),
-                  ),
-                  Text(
-                    "Amount of Irrigation: ${this.amount} (l/m2)",
-                    style: Styles.timeTitle,
-                  ),
-                  _renderAmountOfIrrigationTextField()
-                ],
-              )),
+            height: 100,
+            width: 150,
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(bottom: 20),
+            child: SizedBox(
+              height: 60,
+              width: 230,
+              child: OutlinedButton(
+                child: Text(
+                  'Choose irrigation start time',
+                  style: Styles.timeTitle,
+                ),
+                onPressed: () => _dateTimePickerWidget(context),
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(bottom: 10),
+            child: Text(
+              "Amount of Irrigation: ${this.amount} (l/m2)",
+              style: Styles.timeTitle,
+            ),
+          ),
+          _renderAmountOfIrrigationTextField(),
           _renderConfirmButton(),
         ],
       ),
@@ -328,18 +354,23 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
 
   Widget _renderAmountOfIrrigationTextField() {
     return Container(
-      child: TextField(
-        onSubmitted: (value) {
-          if (value.isNotEmpty) this.amount = double.parse(value);
-        },
-        keyboardType: TextInputType.number,
-        inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter(RegExp(r'[0-9.]'), allow: true)
-        ],
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hoverColor: Colors.blue,
-          hintText: 'Enter amount of irrigation',
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: 250,
+        height: 50,
+        child: TextField(
+          onSubmitted: (value) {
+            if (value.isNotEmpty) this.amount = double.parse(value);
+          },
+          keyboardType: TextInputType.number,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter(RegExp(r'[0-9.]'), allow: true)
+          ],
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hoverColor: Colors.blue,
+            hintText: 'Enter amount of irrigation',
+          ),
         ),
       ),
     );
@@ -347,8 +378,8 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
 
   Widget _renderConfirmButton() {
     return Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.all(20),
+      alignment: Alignment.bottomCenter,
+      padding: EdgeInsets.only(top: 20),
       child: ElevatedButton(
         style: ButtonStyle(
             padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),

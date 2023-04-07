@@ -41,6 +41,14 @@ class Styles {
     fontSize: _textSizeLarge,
     color: blueColor,
   );
+
+  static final predictPageTitle = TextStyle(
+    fontFamily: _fontNameDefault,
+    fontSize: _textSizeDefault,
+    color: blueColor,
+  );
+
+
   static final locationTileTitleDark = TextStyle(
     fontFamily: _fontNameDefault,
     fontSize: _textSizeLarge,
@@ -74,6 +82,14 @@ class Styles {
         borderRadius: BorderRadius.circular(15.0),
       )));
 
+  static final boxDecoration = BoxDecoration(
+      borderRadius: new BorderRadius.circular(10),
+      //border: Border.all(color: Styles.blueColor),
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+            blurRadius: 5.0, offset: Offset(0, 2), color: Styles.blueColor),
+      ]);
   static Color _hexToColor(String code) {
     return Color(int.parse(code.substring(0, 6), radix: 16) + 0xFF000000);
   }
