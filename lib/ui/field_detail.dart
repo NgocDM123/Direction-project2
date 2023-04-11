@@ -1,10 +1,14 @@
-import 'package:direction/ui/predicted_yield_page.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import '../model/field.dart';
 import 'customized_parameters_page.dart';
 import 'detail_irrigation.dart';
 import '../styles.dart';
+import 'package:direction/ui/predicted_yield_page.dart';
+
 
 class FieldDetail extends StatefulWidget {
   final Field field;
@@ -90,14 +94,14 @@ class _FieldDetailState extends State<FieldDetail> {
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.only(left: 10),
-                  child: Text("Download weather data file",
-                      style: Styles.fieldDetailButton),
+                  child: Text(AppLocalizations.of(context)!.downloadWeatherDataFile,
+                      style: Styles.fieldDetailTextStyle),
                 ),
                 Container(
                   alignment: Alignment.centerRight,
                   child: Icon(
                     Icons.download,
-                    color: Colors.blue,
+                    color: Styles.iconColor,
                   ),
                 ),
               ],
@@ -123,14 +127,14 @@ class _FieldDetailState extends State<FieldDetail> {
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.only(left: 10),
-                  child: Text("Edit ${this.field.fieldName}",
-                      style: Styles.fieldDetailButton),
+                  child: Text(AppLocalizations.of(context)!.editFieldName(this.field.fieldName),
+                      style: Styles.fieldDetailTextStyle),
                 ),
                 Container(
                   alignment: Alignment.centerRight,
                   child: Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.blue,
+                    color: Styles.iconColor,
                   ),
                 ),
               ],
@@ -167,14 +171,14 @@ class _FieldDetailState extends State<FieldDetail> {
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.only(left: 10),
-                  child: Text('Predict the yield of ${this.field.fieldName}',
-                      style: Styles.fieldDetailButton),
+                  child: Text(AppLocalizations.of(context)!.predictTheYieldOfField(this.field.fieldName),
+                      style: Styles.fieldDetailTextStyle),
                 ),
                 Container(
                   alignment: Alignment.centerRight,
                   child: Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.blue,
+                    color: Styles.iconColor,
                   ),
                 ),
               ],
@@ -198,14 +202,14 @@ class _FieldDetailState extends State<FieldDetail> {
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.only(left: 10),
-                  child: Text("Monitoring irrigation",
-                      style: Styles.fieldDetailButton),
+                  child: Text(AppLocalizations.of(context)!.monitoringIrrigation,
+                      style: Styles.fieldDetailTextStyle),
                 ),
                 Container(
                   alignment: Alignment.centerRight,
                   child: Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.blue,
+                    color: Styles.iconColor,
                   ),
                 ),
               ],

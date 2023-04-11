@@ -1,5 +1,4 @@
 
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 //TODO ios language support needs additional steps in xcode, see website above
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,8 +15,8 @@ import 'package:firebase_core/firebase_core.dart';
 
 //project files
 import 'package:direction/page_welcome.dart';
-
 import 'package:direction/ui/field_list.dart';
+import 'styles.dart';
 
 //import 'package:direction/classFields.dart';
 var readFile = 0;
@@ -48,7 +47,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'DIRECTION-cassava',
-      locale: Locale('en'),
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         AppLocalizations.delegate, // Add this line
@@ -62,7 +60,7 @@ class MyApp extends StatelessWidget {
         Locale('vi', ''), // Viet, no country code
       ],
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Styles.themeColor,
       ),
       home: DefaultTabController(
         length: 2,

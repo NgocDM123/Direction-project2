@@ -2,7 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:lottie/lottie.dart';
 
 import '../model/field.dart';
@@ -107,11 +108,11 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _decoratedContainer(
-                    "Radiation",
+                    "${AppLocalizations.of(context)!.radiation}",
                     "${this.field.measuredData.radiation.toString()} [MJm^(-2)h^(-1)]",
                     100,
                     150),
-                _decoratedContainer("Rain fall",
+                _decoratedContainer("${AppLocalizations.of(context)!.rainFall}",
                     this.field.measuredData.rainFall.toString(), 100, 150)
               ],
             ),
@@ -122,12 +123,12 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _decoratedContainer(
-                    "Relative humidity",
+                    "${AppLocalizations.of(context)!.relativeHumidity}",
                     "${this.field.measuredData.relativeHumidity.toString()} [%]",
                     100,
                     150),
                 _decoratedContainer(
-                    "Temperature",
+                    "${AppLocalizations.of(context)!.temperature}",
                     "${this.field.measuredData.temperature.toString()} [℃]",
                     100,
                     150)
@@ -140,7 +141,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _decoratedContainer(
-                    "Wind speed",
+                    "${AppLocalizations.of(context)!.windSpeed}",
                     "${this.field.measuredData.windSpeed.toString()} [m s^(-1)]",
                     100,
                     150),
@@ -182,9 +183,9 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
   String _appBarText() {
     String s = '';
     if (this.field.customizedParameters.autoIrrigation) {
-      s = 'Auto irrigation';
+      s = '${this.field.fieldName} (${AppLocalizations.of(context)!.autoIrrigation})';
     } else
-      s = 'Manual irrigation';
+      s = '${AppLocalizations.of(context)!.manualIrrigation}';
     return s;
   }
 
@@ -196,7 +197,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
       alignment: Alignment.center,
       decoration: Styles.boxDecoration,
       child: Text(
-          'The mount of irrigation today is ${this.field.nextIrrigationAmount()}'),
+          '${AppLocalizations.of(context)!.amountOfIrrigationToday} ${this.field.nextIrrigationAmount()}'),
     );
   }
 
@@ -225,7 +226,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
               : Container(),
           Container(
             child: Text(
-              'Start irrigation time: ${this.field.startIrrigation}',
+              '${AppLocalizations.of(context)!.startingIrrigationTime}: ${this.field.startIrrigation}',
               style: Styles.timeTitle,
             ),
             height: 50,
@@ -238,7 +239,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
           ),
           Container(
             child: Text(
-              'End irrigation time: ${this.field.endIrrigation}',
+              '${AppLocalizations.of(context)!.endingIrrigationTime}: ${this.field.endIrrigation}',
               style: Styles.timeTitle,
             ),
             height: 50,
@@ -273,7 +274,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
           decoration: Styles.boxDecoration,
           alignment: Alignment.center,
           child: Text(
-            "The amount of irrigation for ${this.field.getIrrigationTime()}: ${this.field.getIrrigationAmount()} (l/m2)",
+            "${AppLocalizations.of(context)!.amountOfIrrigationFor} ${this.field.getIrrigationTime()}: ${this.field.getIrrigationAmount()} (l/m2)}",
             style: Styles.textDefault,
           ),
         ),
@@ -300,7 +301,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
             padding: EdgeInsets.only(top: 20, bottom: 10),
             alignment: Alignment.center,
             child: Text(
-              'Start time: ${this.selectedStartTime}',
+              '${AppLocalizations.of(context)!.startingTime}: ${this.selectedStartTime}',
               style: Styles.timeTitle,
             ),
           ),
@@ -314,7 +315,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
               width: 230,
               child: OutlinedButton(
                 child: Text(
-                  'Choose irrigation start time',
+                  '${AppLocalizations.of(context)!.chooseIrrigationTime}',
                   style: Styles.timeTitle,
                 ),
                 onPressed: () => _dateTimePickerWidget(context),
@@ -325,7 +326,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 10),
             child: Text(
-              "Amount of Irrigation: ${this.amount} (l/m2)",
+              "${AppLocalizations.of(context)!.amountOfIrrigation}: ${this.amount} (l/m2)",
               style: Styles.timeTitle,
             ),
           ),
@@ -369,7 +370,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             hoverColor: Colors.blue,
-            hintText: 'Enter amount of irrigation',
+            hintText: '${AppLocalizations.of(context)!.enterAmountOfIrrigation}',
           ),
         ),
       ),
@@ -389,7 +390,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
               borderRadius: BorderRadius.circular(15.0),
             ))),
         child: Text(
-          'Confirm irrigation',
+          '${AppLocalizations.of(context)!.confirm}',
           style: Styles.locationTileTitleLight,
         ),
         onPressed: () => {

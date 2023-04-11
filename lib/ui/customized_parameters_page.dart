@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../model/customized_parameters.dart';
 import '../model/field.dart';
 import 'detail_irrigation.dart';
-import '../constant.dart';
 import '../styles.dart';
 
 const double _sliderHeight = 175;
@@ -29,17 +28,18 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     super.initState();
   }
 
-  void _displayTimePicker() {
-    setState(() {
-      _displayConfirmButton = true;
-    });
-  }
+  // void _displayTimePicker() {
+  //   setState(() {
+  //     _displayConfirmButton = true;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit ${this.field.customizedParameters.fieldName}'),
+        title: Text(
+            '${AppLocalizations.of(context)!.edit} ${this.field.customizedParameters.fieldName}'),
       ),
       body: Stack(
         children: [
@@ -83,7 +83,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
           Container(
             //alignment: Alignment.topLeft,
             child: Text(
-              'Acreage: ${this.field.customizedParameters.acreage} (m2)',
+              '${AppLocalizations.of(context)!.acreage}: ${this.field.customizedParameters.acreage} (m2)',
               style: Styles.locationTileTitleLight,
             ),
           ),
@@ -102,12 +102,9 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
-                        color: Colors.blue.withOpacity(0.3),
-                        width: 2.0
-                    )
-                ),
+                        color: Colors.blue.withOpacity(0.3), width: 2.0)),
                 //labelText: '${this.field.fieldName}',
-                hintText: 'Enter the acreage',
+                hintText: AppLocalizations.of(context)!.enterAcreage,
               ),
             ),
           ),
@@ -124,7 +121,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
           Container(
             padding: EdgeInsets.only(bottom: 10),
             child: Text(
-              '${Constant.NUMBER_OF_HOLES_DISPLAY}: ${this.field.customizedParameters.numberOfHoles} (holes)',
+              '${AppLocalizations.of(context)!.holesNumber}: ${this.field.customizedParameters.numberOfHoles} (${AppLocalizations.of(context)!.holes})',
               style: Styles.locationTileTitleLight,
               textAlign: TextAlign.left,
             ),
@@ -142,14 +139,11 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               ],
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide(
-                    color: Colors.blue.withOpacity(0.3),
-                    width: 2.0
-                  )
-                ),
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(
+                        color: Colors.blue.withOpacity(0.3), width: 2.0)),
                 //labelText: '${this.field.fieldName}',
-                hintText: 'Enter the number of drip holes',
+                hintText: AppLocalizations.of(context)!.enterDripHoles,
               ),
             ),
           ),
@@ -160,6 +154,8 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
 
   Widget _renderAutoIrrigationSwitch() {
     return Container(
+      margin: EdgeInsets.only(bottom: 30),
+      alignment: Alignment.center,
       height: 150,
       child: Stack(
         children: [
@@ -167,7 +163,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
             children: [
               Container(
                 child: Text(
-                  '${Constant.AUT0_IRRIGATION_DISPLAY}',
+                  '${AppLocalizations.of(context)!.autoIrrigation}',
                   style: Styles.locationTileTitleLight,
                 ),
                 padding: EdgeInsets.only(left: 23),
@@ -180,7 +176,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
                       this.field.customizedParameters.autoIrrigation = value;
                     });
                   },
-                  activeColor: Colors.blue,
+                  activeColor: Styles.iconColor,
                 ),
                 alignment: Alignment.center,
                 //padding: EdgeInsets.only(left: 100),
@@ -192,7 +188,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               itemBuilder: (context) => [
                 PopupMenuItem(
                   child: TextButton(
-                    child: Text('Go to the detail irrigation'),
+                    child: Text('${AppLocalizations.of(context)!.goToDetailIrrigation}'),
                     onPressed: () =>
                         _navigateToDetailIrrigationPage(context, this.field),
                   ),
@@ -212,7 +208,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
         children: [
           Container(
             child: Text(
-              '${Constant.FIELD_CAPACITY_DISPLAY}',
+              '${AppLocalizations.of(context)!.fieldCapacityToMaintain}',
               style: Styles.locationTileTitleLight,
             ),
             padding: EdgeInsets.only(left: 23),
@@ -234,12 +230,13 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               min: 0,
               max: 100,
               divisions: 100,
-              label: '${Constant.FIELD_CAPACITY_DISPLAY}'),
+              label: '${AppLocalizations.of(context)!.fieldCapacityToMaintain}'
+          ),
         ],
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
       ),
-      height: 150,
+      height: _sliderHeight,
       padding: EdgeInsets.only(bottom: 20, top: 10),
     );
   }
@@ -250,7 +247,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
         children: [
           Container(
             child: Text(
-              '${Constant.IRRIGATION_DURATION_DISPLAY}',
+              '${AppLocalizations.of(context)!.durationOfIrrigation}',
               style: Styles.locationTileTitleLight,
             ),
             padding: EdgeInsets.only(left: 23),
@@ -272,7 +269,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               min: 0,
               max: 24,
               divisions: 100,
-              label: '${Constant.IRRIGATION_DURATION_DISPLAY}'),
+              label: '${AppLocalizations.of(context)!.durationOfIrrigation}'),
         ],
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,7 +285,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
         children: [
           Container(
             child: Text(
-              '${Constant.DRIP_RATE_DISPLAY}',
+              '${AppLocalizations.of(context)!.dripRate}',
               style: Styles.locationTileTitleLight,
             ),
             padding: EdgeInsets.only(left: 23),
@@ -310,7 +307,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               min: 0,
               max: 8,
               divisions: 100,
-              label: '${Constant.DRIP_RATE_DISPLAY}'),
+              label: '${AppLocalizations.of(context)!.dripRate}'),
         ],
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,7 +323,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
         children: [
           Container(
             child: Text(
-              '${Constant.DISTANCE_BETWEEN_HOLES_DISPLAY}',
+              '${AppLocalizations.of(context)!.distanceBetweenHoles}',
               style: Styles.locationTileTitleLight,
             ),
             padding: EdgeInsets.only(left: 23),
@@ -348,7 +345,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               min: 0,
               max: 100,
               divisions: 100,
-              label: '${Constant.DISTANCE_BETWEEN_HOLES_DISPLAY}'),
+              label: '${AppLocalizations.of(context)!.distanceBetweenHoles}'),
         ],
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,7 +361,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
         children: [
           Container(
             child: Text(
-              '${Constant.DISTANCE_BETWEEN_ROWS_DISPLAY}',
+              '${AppLocalizations.of(context)!.distanceBetweenRows}',
               style: Styles.locationTileTitleLight,
             ),
             padding: EdgeInsets.only(left: 23),
@@ -386,7 +383,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               min: 0,
               max: 100,
               divisions: 100,
-              label: '${Constant.DISTANCE_BETWEEN_ROWS_DISPLAY}'),
+              label: '${AppLocalizations.of(context)!.distanceBetweenRows}'),
         ],
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,7 +399,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
         children: [
           Container(
             child: Text(
-              '${Constant.SCALE_RAIN_DISPLAY}',
+              '${AppLocalizations.of(context)!.scaleRain}',
               style: Styles.locationTileTitleLight,
             ),
             padding: EdgeInsets.only(left: 23),
@@ -424,7 +421,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               min: 0,
               max: 100,
               divisions: 100,
-              label: '${Constant.SCALE_RAIN_DISPLAY}'),
+              label: '${AppLocalizations.of(context)!.scaleRain}'),
         ],
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,7 +437,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
         children: [
           Container(
             child: Text(
-              '${Constant.FERTILIZATION_LEVEL_DISPLAY}',
+              '${AppLocalizations.of(context)!.scaleFertilizer}',
               style: Styles.locationTileTitleLight,
             ),
             padding: EdgeInsets.only(left: 23),
@@ -462,7 +459,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               min: 0,
               max: 100,
               divisions: 100,
-              label: '${Constant.FERTILIZATION_LEVEL_DISPLAY}'),
+              label: '${AppLocalizations.of(context)!.scaleFertilizer}'),
         ],
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,7 +479,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
       child: Stack(
         children: [
           ElevatedButton(
-            child: Text('Change'),
+            child: Text('${AppLocalizations.of(context)!.change}'),
             onPressed: () => {
               setState(() {
                 this.field.customizedParameters.updateDataToDb();

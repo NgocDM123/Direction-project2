@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../model/field.dart';
 import '../styles.dart';
@@ -90,18 +91,7 @@ class _FieldListState extends State<FieldList> {
     return GestureDetector(
         onTap: () => _navigateToFieldDetail(context, field),
         child: Container(
-          decoration: BoxDecoration(
-            borderRadius: new BorderRadius.circular(10),
-            //border: Border.all(color: Styles.blueColor),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 5.0,
-                offset: Offset(0, 2),
-                color: Styles.blueColor
-              ),
-            ]
-          ),
+          decoration: Styles.boxDecoration,
           height: 70,
           padding: EdgeInsets.fromLTRB(25.0, 15.0, 15.0, 15.0),
           margin: EdgeInsets.only(top: 20.0, left: 15, right: 15),
@@ -116,7 +106,10 @@ class _FieldListState extends State<FieldList> {
                 child: PopupMenuButton(
                   itemBuilder: (context) => [
                     PopupMenuItem(
-                      child: Text('Delete'),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Text(AppLocalizations.of(context)!.delete),
+                      ),
                       onTap: () => {
                         _deleteField(field.fieldName),
                       },
@@ -140,7 +133,7 @@ class _FieldListState extends State<FieldList> {
       child: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () => {_form()},
-        backgroundColor: Colors.blue,
+        backgroundColor: Styles.addButtonColor,
         foregroundColor: Colors.white,
       ),
       alignment: Alignment.bottomRight,
@@ -164,7 +157,8 @@ class _FieldListState extends State<FieldList> {
         autofocus: true,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          labelText: 'Field name',
+          labelText: AppLocalizations.of(context)!.labelTextAddField,
+          hintText: AppLocalizations.of(context)!.hintFieldName,
         ),
       ),
       color: Colors.white,

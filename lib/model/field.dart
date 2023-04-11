@@ -311,6 +311,15 @@ class Field {
     return r;
   }
 
+  List<DateTime> getResultDay() {
+    List<DateTime> r = List.generate(_results[8].length, (index) => _getDay(_results[8][index]));
+    return r;
+  }
+
+  DateTime getDay(double day) {
+    return _getDay(day);
+  }
+
 
   //get Weather data at time t (DateTime) directly from firebase
   Future<List<double>> getWeatherDataFromDb(DateTime t) async {
@@ -517,7 +526,7 @@ class Field {
     if (this.customizedParameters.autoIrrigation) _updateAutoIrrigationInfo();
     // if (this.customizedParameters.autoIrrigation) updateIrrigationToDb();
   }
-
+//in order to displaying for user
   double getIrrigationAmount() {
     var length = _results[2].length;
     double irr = (length > 1)
@@ -531,7 +540,7 @@ class Field {
     String formattedDate = DateFormat('dd-MM-yyyy').format(day);
     return formattedDate;
   }
-
+//write to db
   _updateAutoIrrigationInfo() {
     var length = _results[2].length;
     double irr = (length > 1)
@@ -557,12 +566,12 @@ class Field {
   }
 
   //return doy
-  double nextIrrigationDate() {
-    double current = _getDoy(DateTime.now());
-    double doy = -1;
-    doy = _results[8].last + 1; // irrigation for the next day
-    return doy - current;
-  }
+  // double nextIrrigationDate() {
+  //   double current = _getDoy(DateTime.now());
+  //   double doy = -1;
+  //   doy = _results[8].last + 1; // irrigation for the next day
+  //   return doy - current;
+  // }
 
   Future<void> updateIrrigationToDb() async {
     DatabaseReference ref = FirebaseDatabase.instance.ref(
@@ -751,7 +760,7 @@ class Field {
     final LDM = y[++cnt]; // Leaf Dry Mass (g)
     final SDM = y[++cnt]; // Stem Dry Mass (g)
     final RDM = y[++cnt]; // Root Dry Mass (g)
-    final SRDM = y[++cnt]; // Sotrage Root Dry Mass (g)
+    final SRDM = y[++cnt]; // Storage Root Dry Mass (g)
     final LA = y[++cnt]; // Leaf Area (m2)
 
     final mDMl = y[++cnt]; //intgrl("mDMl", 0, "mGRl");
