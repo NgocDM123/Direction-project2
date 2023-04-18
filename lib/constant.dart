@@ -1,5 +1,5 @@
 class Constant {
-  static const USER = 'testUser';
+  static const USER = 'user';
   static const TEST_USER = 'testUser';
   static const CUSTOMIZED_PARAMETERS = 'customized_parameters';
   static const POTENTIAL_YIELD = 'potentialYield';

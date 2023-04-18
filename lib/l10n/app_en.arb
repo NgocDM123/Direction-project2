@@ -86,8 +86,9 @@
   "rainFall": "Rain fall",
   "relativeHumidity": "RelativeHumidity",
   "temperature": "Temperature",
-  "windSpeed": "Wind speed"
-
+  "windSpeed": "Wind speed",
+  "soil30Humidity": "30 cm soil humidity",
+  "soil60Humidity": "60 cm soil humidity"
 
 
 

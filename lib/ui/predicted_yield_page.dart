@@ -70,9 +70,15 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    return Text("${DateFormat('dd-MM').format(this.field.getDay(value))}");
+    return Container(
+      margin: EdgeInsets.only(top: 5),
+      child: RotationTransition(
+        turns: new AlwaysStoppedAnimation(- 15 / 360),
+        child: Text("${DateFormat('dd-MM').format(this.field.getDay(value))}"),
+      ),
+    );
   }
-
+//Text("${DateFormat('dd-MM').format(this.field.getDay(value))}")
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     return Container(
       child: Text("${double.parse(value.toStringAsFixed(2))}"),
@@ -95,7 +101,7 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
             ),
           ),
           SizedBox(
-            height: 250,
+            height: 300,
             width: 400,
             child: AspectRatio(
               aspectRatio: 2,
@@ -123,12 +129,14 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
                   bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                           showTitles: true,
-                          interval: (xData.length / 4),
+                          interval: (xData.length / 2.5),
+                          reservedSize: 30,
                           getTitlesWidget: bottomTitleWidgets)),
                   leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                           showTitles: false,
                           interval: yData.length / 2,
+                          reservedSize: 30,
                           getTitlesWidget: leftTitleWidgets)),
                   topTitles:
                       AxisTitles(sideTitles: SideTitles(showTitles: false)),

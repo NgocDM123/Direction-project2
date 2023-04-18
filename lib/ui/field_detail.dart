@@ -64,7 +64,7 @@ class _FieldDetailState extends State<FieldDetail> {
 
   _loadData() async {
     await this.field.runModel();
-    await this.field.getMeasuredDataFromDb();
+    //await this.field.getMeasuredDataFromDb();
   }
 
   Widget _renderBody(BuildContext context, Field field) {

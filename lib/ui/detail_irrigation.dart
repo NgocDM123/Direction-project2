@@ -10,6 +10,8 @@ import '../model/field.dart';
 import 'package:direction/styles.dart';
 import '../constant.dart';
 
+double _boxHeight = 100;
+double _boxWidth = 150;
 class DetailIrrigation extends StatefulWidget {
   final Field field;
 
@@ -89,10 +91,11 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
           this.selectedStartTime = DateTime.parse(s);
           s = snapshot.child('duration').value.toString();
           var duration = double.parse(s);
-          this.amount = duration *
+          this.amount = (duration *
               this.field.customizedParameters.dripRate /
               this.field.customizedParameters.acreage *
-              this.field.customizedParameters.numberOfHoles;
+              this.field.customizedParameters.numberOfHoles /
+              3600);
         }
       }
     }
@@ -110,8 +113,8 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
                 _decoratedContainer(
                     "${AppLocalizations.of(context)!.radiation}",
                     "${this.field.measuredData.radiation.toString()} [MJm^(-2)h^(-1)]",
-                    100,
-                    150),
+                    _boxHeight,
+                    _boxWidth),
                 _decoratedContainer("${AppLocalizations.of(context)!.rainFall}",
                     this.field.measuredData.rainFall.toString(), 100, 150)
               ],
@@ -125,13 +128,13 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
                 _decoratedContainer(
                     "${AppLocalizations.of(context)!.relativeHumidity}",
                     "${this.field.measuredData.relativeHumidity.toString()} [%]",
-                    100,
-                    150),
+                    _boxHeight,
+                    _boxWidth),
                 _decoratedContainer(
                     "${AppLocalizations.of(context)!.temperature}",
                     "${this.field.measuredData.temperature.toString()} [℃]",
-                    100,
-                    150)
+                    _boxHeight,
+                    _boxWidth)
               ],
             ),
           ),
@@ -143,23 +146,44 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
                 _decoratedContainer(
                     "${AppLocalizations.of(context)!.windSpeed}",
                     "${this.field.measuredData.windSpeed.toString()} [m s^(-1)]",
-                    100,
-                    150),
-                Container(
-                  width: 150,
-                  height: 100,
-                  decoration: Styles.boxDecoration,
-                  child: (this.field.irrigationCheck)
-                      ? Lottie.asset('assets/animations/water-drop.json')
-                      : Lottie.asset(
-                          'assets/animations/energyshares-plant5.json'),
-                ),
+                    _boxHeight,
+                    _boxWidth),
+                _renderIrrigationStatus()
               ],
             ),
           ),
+          Container(
+            padding: EdgeInsets.only(top: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _renderSoilHumidity(true),
+                _renderSoilHumidity(false)
+              ],
+            ),
+          )
         ],
       ),
     );
+  }
+
+  Widget _renderIrrigationStatus() {
+    return Container(
+      width: _boxWidth,
+      height: _boxHeight,
+      decoration: Styles.boxDecoration,
+      child: (this.field.irrigationCheck)
+          ? Lottie.asset('assets/animations/water-drop.json')
+          : Lottie.asset('assets/animations/energyshares-plant5.json'),
+    );
+  }
+
+  Widget _renderSoilHumidity(bool humidity30) {
+    return (humidity30)
+        ? _decoratedContainer("${AppLocalizations.of(context)!.soil30Humidity}",
+            "${this.field.measuredData.soil30Humidity.toStringAsFixed(2)}%", _boxHeight, _boxWidth)
+        : _decoratedContainer("${AppLocalizations.of(context)!.soil60Humidity}",
+            "${this.field.measuredData.soil60Humidity.toStringAsFixed(2)}%", _boxHeight, _boxWidth);
   }
 
   Widget _decoratedContainer(
@@ -173,8 +197,8 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("$title"),
-          Text("$value"),
+          Text("$title", textAlign: TextAlign.center,),
+          Text("$value", textAlign: TextAlign.center,),
         ],
       ),
     );
@@ -274,7 +298,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
           decoration: Styles.boxDecoration,
           alignment: Alignment.center,
           child: Text(
-            "${AppLocalizations.of(context)!.amountOfIrrigationFor} ${this.field.getIrrigationTime()}: ${this.field.getIrrigationAmount()} (l/m2)}",
+            "${AppLocalizations.of(context)!.amountOfIrrigationFor} ${this.field.getIrrigationTime()}: ${this.field.getIrrigationAmount()} (l/m2)",
             style: Styles.textDefault,
           ),
         ),
@@ -370,7 +394,8 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             hoverColor: Colors.blue,
-            hintText: '${AppLocalizations.of(context)!.enterAmountOfIrrigation}',
+            hintText:
+                '${AppLocalizations.of(context)!.enterAmountOfIrrigation}',
           ),
         ),
       ),
@@ -396,12 +421,14 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
         onPressed: () => {
           setState(() {
             final Map<String, dynamic> updates = {};
+            double setDuration = this.amount *
+                this.field.customizedParameters.acreage /
+                (this.field.customizedParameters.dripRate *
+                    this.field.customizedParameters.numberOfHoles) *
+                3600;
             updates["${Constant.IRRIGATION_INFORMATION}"] = {
               "time": this.selectedStartTime.toString(),
-              "duration": this.amount *
-                  this.field.customizedParameters.acreage /
-                  this.field.customizedParameters.dripRate /
-                  this.field.customizedParameters.numberOfHoles,
+              "duration": setDuration,
               // "${day}": tIrr
             };
             FirebaseDatabase.instance

@@ -73,5 +73,7 @@
   "rainFall": "Lượng mưa",
   "relativeHumidity": "Độ ẩm tương đối",
   "temperature": "Nhiệt độ",
-  "windSpeed": "Tốc độ gió"
+  "windSpeed": "Tốc độ gió",
+    "soil30Humidity": "Độ ẩm đất ở độ sâu 30cm",
+    "soil60Humidity": "Độ ẩm đất ở độ sâu 60cm"
 }

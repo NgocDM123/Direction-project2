@@ -39,10 +39,10 @@ bool _zerodrain = true;
 //double _igstart = 0;
 //double _igend = 0;
 //todo needs to be based on planting date provided by user.then weather should start at right point
-double _iTheta = 0.22;
+double _iTheta = 0.2;
 double _thm = 0.18; //drier todo make
 double _ths = 0.27; //field capacity, not saturation todo rename
-double _thr = 0.015;
+double _thr = 0.015; // residual water content
 double _thg = 0.02;
 double _rateFlow = 1.3;
 
@@ -114,7 +114,7 @@ double photoFixMean(double ppfd, double lai,
 double fSLA(ct) {
   return (logistic(ct, x0: 0.04, xc: 60, k: 0.1, m: 0.0264));
 }
-
+// water uptake
 fKroot(th, rl) {
   final rth = relTheta(th);
   final kadj = min(1.0, pow(rth / 0.4, 1.5));
@@ -157,6 +157,7 @@ class Field {
   final int _iRH = 4;
   final _iTemp = 5;
   final int _iWind = 6;
+  final int _iIrrigation = 7;
 
   Field(
       this.fieldName,
@@ -195,7 +196,14 @@ class Field {
   } //(done)
 
   Future<void> getMeasuredDataFromDb() async {
-    await measuredData.updateDataFromDb();
+    await writeWeatherDataToCsvFile();
+    await loadAllWeatherDataFromCsvFile();
+    var data = _weatherData.last;
+    this.measuredData.radiation = data[_iRadiation];
+    this.measuredData.rainFall = data[_iRain];
+    this.measuredData.relativeHumidity = data[_iRH];
+    this.measuredData.temperature = data[_iTemp];
+    this.measuredData.windSpeed = data[_iWind];
   }
 
   Future<void> getIrrigationCheckFromDb() async {
@@ -223,6 +231,9 @@ class Field {
     a = snapshot.child('${Constant.END_IRRIGATION}').value;
     this.endIrrigation = a.toString();
     a = snapshot.child('${Constant.START_TIME}').value;
+    DataSnapshot tmp = snapshot.child('humidity_hour').children.last.children.last;
+    this.measuredData.soil30Humidity = double.parse(tmp.child('humidity30').value.toString());
+    this.measuredData.soil60Humidity = double.parse(tmp.child('humidity60').value.toString());
   }
 
   Future<void> getDataFromDb() async {
@@ -321,52 +332,7 @@ class Field {
   }
 
 
-  //get Weather data at time t (DateTime) directly from firebase
-  Future<List<double>> getWeatherDataFromDb(DateTime t) async {
-    //List<double> weatherData = [];
-    double et0 = 0;
-    var doy = _getDoy(t); //day of year
-    var radiation;
-    var rainFall;
-    var relativeHumidity;
-    var temperature;
-    var windSpeed;
-    await MeasuredData.getWeatherDataFromDb(Constant.USER, this.fieldName, t)
-        .then((value) {
-      radiation = value[0];
-      rainFall = value[1];
-      relativeHumidity = value[2];
-      temperature = value[3];
-      windSpeed = value[4];
-    });
-    et0 = 24.0 *
-        hourlyET(
-            temperature,
-            radiation,
-            relativeHumidity,
-            windSpeed,
-            doy,
-            Constant.latitude,
-            Constant.longitude,
-            Constant.elevation,
-            Constant.longitude,
-            Constant.height);
-    double ppfd = radiation * 2.15; //2.15 for conversion of energy to ppfd
-    double irrigation =
-        0; //todo allow farmer to enter//row[_iIrrigation].toDouble();
-    double dt = 0.01;
-    List<double> weatherData = [
-      rainFall,
-      temperature,
-      ppfd,
-      et0,
-      irrigation,
-      dt
-    ];
-    return weatherData;
-  }
 
-  //get all new weather data from firebase
   Future<List<List<dynamic>>> _getAllWeatherDataFromDb(
       bool check, DateTime dateTime) async {
     List<List<dynamic>> data = [];
@@ -725,6 +691,7 @@ class Field {
           Constant.longitude,
           Constant.height);
       wd.add(et0); //wd[3]
+      var irr = _weatherData[i][_iIrrigation];
       wd.add(0.0); //for irrigation,wd[4]
       var dt = _weatherData[i][_iDOY] - _weatherData[i - 1][_iDOY];
       wd.add(dt);
@@ -801,12 +768,12 @@ class Field {
     final TSroot = 1.0; // effect of temperature on root sink strength
 
 // water uptake
-    fKroot(th, rl) {
-      final rth = relTheta(th);
-      final kadj = min(1.0, pow(rth / 0.4, 1.5));
-      final Ksr = 0.01;
-      return (Ksr * kadj * rl);
-    }
+//     fKroot(th, rl) {
+//       final rth = relTheta(th);
+//       final kadj = min(1.0, pow(rth / 0.4, 1.5));
+//       final Ksr = 0.01;
+//       return (Ksr * kadj * rl);
+//     }
 
     final krootL =
         new List<double>.generate(_nsl, (i) => fKroot(thetaL[i], rlL[i]));
@@ -861,14 +828,13 @@ class Field {
         _fcThreshHold > _thr &&
         thEquiv < _fcThreshHold) {
       _autoIrrigateTime = ct;
-      //print("irrigating ${_ps.fieldName} at $ct _stopIrrigation:$_stopIrrigation");
     }
     if (ct < _autoIrrigateTime + _autoIrrigationDuration) {
       irrigation += _autoIrrigate;
     }
 
     final precipitation = this.customizedParameters.scaleRain / 100 * wd[0] +
-        irrigation; //return ([rain, temp, ppfd, et0, irri]) (amount of the rain ?)
+        irrigation; //return ([rain, temp, ppfd, et0, irri])
 
     // Transpiration
     final ET0reference = wd[3]; //return ([rain, temp, ppfd, et0, irri])
@@ -1064,6 +1030,7 @@ class Field {
     // labile pool
     final ClabR = (CFR - CFG - RR) / cDm;
 
+    //mark_result
     // construct array of rates, make sure order is same as in y.
     cnt = -1;
     var YR = new List<double>.generate(9, (index) => 0.0);
@@ -1084,9 +1051,9 @@ class Field {
           print("rates: $YR, states:$y, weather:$wd, ET:$ET0reference"));
     }
 
-    YR.add(irrigation); //just for reporting amount of water needed
-    YR.add(wd[0]); //rain
-    YR.add(actualTranspiration); //just for reporting amount of water needed
+    YR.add(irrigation); //just for reporting amount of water needed //34
+    YR.add(wd[0]); //rain//35
+    YR.add(actualTranspiration); //just for reporting amount of water needed//36
     YR.add(evaporation);
     YR.add(drain);
     YR.add(CFR);
