@@ -140,16 +140,9 @@ class Field {
   MeasuredData measuredData;
   String startIrrigation;
   String endIrrigation;
-  static const int _printSize = 366;
-  static final double pdt = 3.0;
+  // static final double pdt = 3.0;
   double _autoIrrigateTime = -1;
   List<List<double>> _results = [];
-  List<double> _printTime = List.generate(_printSize, (index) => -1000.0);
-
-  List<double> getPrintTime() {
-    return _printTime;
-  }
-
   final int _iTime = 0;
   final int _iDOY = 1;
   final _iRadiation = 2;
@@ -675,7 +668,7 @@ class Field {
       var tempC = _weatherData[i][_iTemp];
       wd.add(tempC); //wd[1]
       var radiation = _weatherData[i][_iRadiation];
-      wd.add(2.5 * radiation); // ppfd = 2.5 * radiation, wd[2]
+      wd.add(2.5 * radiation); // ppfd = 2.5 * radiation, wd[2], photosynthetic photon flux density
       var relativeHumidity = _weatherData[i][_iRH];
       var wind = _weatherData[i][_iWind];
       var doy = _weatherData[i][_iDOY];
