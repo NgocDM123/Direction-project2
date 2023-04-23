@@ -165,6 +165,5 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
 class ChartPoint {
   final double x;
   final double y;
-
   ChartPoint({required this.x, required this.y});
 }

@@ -59,7 +59,7 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     result.add(_renderDistanceBetweenHolesSlider());
     result.add(_renderDistanceBetweenRowsSlider());
     result.add(_renderFieldCapacitySlider());
-    result.add(_renderScaleRainSlider());
+    //result.add(_renderScaleRainSlider());
     result.add(_renderFertilizerLevelSlider());
     result.add(_renderAutoIrrigationSwitch());
     return Container(
@@ -393,43 +393,43 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
     );
   }
 
-  Widget _renderScaleRainSlider() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            child: Text(
-              '${AppLocalizations.of(context)!.scaleRain}',
-              style: Styles.locationTileTitleLight,
-            ),
-            padding: EdgeInsets.only(left: 23),
-          ),
-          Container(
-            child: Text(
-              '${this.field.customizedParameters.scaleRain}',
-              style: Styles.locationTileTitleLight,
-            ),
-            padding: EdgeInsets.only(left: 23),
-          ),
-          Slider(
-              value: this.field.customizedParameters.scaleRain,
-              onChanged: (double value) {
-                setState(() {
-                  this.field.customizedParameters.scaleRain = value;
-                });
-              },
-              min: 0,
-              max: 100,
-              divisions: 100,
-              label: '${AppLocalizations.of(context)!.scaleRain}'),
-        ],
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-      ),
-      height: _sliderHeight,
-      padding: EdgeInsets.only(bottom: 20, top: 10),
-    );
-  }
+  // Widget _renderScaleRainSlider() {
+  //   return Container(
+  //     child: Column(
+  //       children: [
+  //         Container(
+  //           child: Text(
+  //             '${AppLocalizations.of(context)!.scaleRain}',
+  //             style: Styles.locationTileTitleLight,
+  //           ),
+  //           padding: EdgeInsets.only(left: 23),
+  //         ),
+  //         Container(
+  //           child: Text(
+  //             '${this.field.customizedParameters.scaleRain}',
+  //             style: Styles.locationTileTitleLight,
+  //           ),
+  //           padding: EdgeInsets.only(left: 23),
+  //         ),
+  //         Slider(
+  //             value: this.field.customizedParameters.scaleRain,
+  //             onChanged: (double value) {
+  //               setState(() {
+  //                 this.field.customizedParameters.scaleRain = value;
+  //               });
+  //             },
+  //             min: 0,
+  //             max: 100,
+  //             divisions: 100,
+  //             label: '${AppLocalizations.of(context)!.scaleRain}'),
+  //       ],
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //     ),
+  //     height: _sliderHeight,
+  //     padding: EdgeInsets.only(bottom: 20, top: 10),
+  //   );
+  // }
 
   Widget _renderFertilizerLevelSlider() {
     return Container(

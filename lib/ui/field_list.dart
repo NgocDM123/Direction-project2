@@ -20,7 +20,7 @@ class FieldList extends StatefulWidget {
 }
 
 class _FieldListState extends State<FieldList> {
-  List<Field> fields = [];
+  List<Field> _fields = [];
   bool _displayForm = false;
 
   @override
@@ -66,10 +66,10 @@ class _FieldListState extends State<FieldList> {
         future: this.getFieldNameFromDb(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            fields = [];
+            _fields = [];
             for (DataSnapshot child in snapshot.data!.children) {
               Field f = Field.newOne(child.key!);
-              fields.add(f);
+              _fields.add(f);
             }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             Center(
@@ -77,7 +77,7 @@ class _FieldListState extends State<FieldList> {
             );
           }
           return ListView.builder(
-            itemCount: fields.length,
+            itemCount: _fields.length,
             itemBuilder: _listFieldBuilder,
           );
         },
@@ -87,7 +87,7 @@ class _FieldListState extends State<FieldList> {
   }
 
   Widget _listFieldBuilder(BuildContext context, int index) {
-    final field = fields[index];
+    final field = _fields[index];
     return GestureDetector(
         onTap: () => _navigateToFieldDetail(context, field),
         child: Container(
@@ -146,6 +146,7 @@ class _FieldListState extends State<FieldList> {
 
     var result = Container(
       child:  TextField(
+        //keyboardType: ,
         onSubmitted: (String text) {
           if (text == '') {
             setState(() {
@@ -178,7 +179,7 @@ class _FieldListState extends State<FieldList> {
       "${Constant.START_IRRIGATION}": "",
       "${Constant.END_IRRIGATION}": "",
       "${Constant.IRRIGATION_CHECK}": "false",
-      //"${Constant.MEASURED_DATA}": "",
+      "${Constant.MEASURED_DATA}": "",
       "${Constant.CUSTOMIZED_PARAMETERS}": ""
     };
     FirebaseDatabase.instance.ref().update(updates);

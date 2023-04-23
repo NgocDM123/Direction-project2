@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
+
 //TODO ios language support needs additional steps in xcode, see website above
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
- //generate code for language switch
+//generate code for language switch
 
 //database management
 import 'dart:io' show Platform;
@@ -11,7 +11,6 @@ import 'dart:async';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 
 //project files
 import 'package:direction/page_welcome.dart';
@@ -30,15 +29,7 @@ Future main() async {
   }
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-
-
-
   runApp(MyApp());
-  // if (readFile == 0) {
-  //   readFile++;
-  //   await Fields.readCsvFile();
-  // }
 }
 
 class MyApp extends StatelessWidget {

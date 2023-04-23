@@ -20,10 +20,10 @@ class FieldDetail extends StatefulWidget {
 }
 
 class _FieldDetailState extends State<FieldDetail> {
-  final Field field;
+  final Field _field;
   bool loading = false;
 
-  _FieldDetailState(this.field);
+  _FieldDetailState(this._field);
 
   @override
   void initState() {
@@ -36,9 +36,9 @@ class _FieldDetailState extends State<FieldDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(this.field.fieldName),
+          title: Text(this._field.fieldName),
         ),
-        body:_loadDataBeforeRenderBody(context, field));
+        body:_loadDataBeforeRenderBody(context, _field));
   }
 
   Widget _loadDataBeforeRenderBody(BuildContext context, Field field) {
@@ -63,7 +63,7 @@ class _FieldDetailState extends State<FieldDetail> {
   }
 
   _loadData() async {
-    await this.field.runModel();
+    await this._field.runModel();
     //await this.field.getMeasuredDataFromDb();
   }
 
@@ -106,7 +106,7 @@ class _FieldDetailState extends State<FieldDetail> {
                 ),
               ],
             ),
-            onPressed: () => this.field.downloadWeatherDataFile(),
+            onPressed: () => this._field.downloadWeatherDataFile(),
           ),
         ));
   }
@@ -127,7 +127,7 @@ class _FieldDetailState extends State<FieldDetail> {
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.only(left: 10),
-                  child: Text(AppLocalizations.of(context)!.editFieldName(this.field.fieldName),
+                  child: Text(AppLocalizations.of(context)!.editFieldName(this._field.fieldName),
                       style: Styles.fieldDetailTextStyle),
                 ),
                 Container(
@@ -140,7 +140,7 @@ class _FieldDetailState extends State<FieldDetail> {
               ],
             ),
             onPressed: () =>
-                _navigateToCustomizedParametersPage(context, this.field),
+                _navigateToCustomizedParametersPage(context, this._field),
           ),
         ));
   }
@@ -151,7 +151,7 @@ class _FieldDetailState extends State<FieldDetail> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => CustomizedParametersPage(this.field)));
+            builder: (context) => CustomizedParametersPage(this._field)));
   }
 
   void _navigateToPredictedYieldPage(BuildContext context, Field field) {
@@ -171,7 +171,7 @@ class _FieldDetailState extends State<FieldDetail> {
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.only(left: 10),
-                  child: Text(AppLocalizations.of(context)!.predictTheYieldOfField(this.field.fieldName),
+                  child: Text(AppLocalizations.of(context)!.predictTheYieldOfField(this._field.fieldName),
                       style: Styles.fieldDetailTextStyle),
                 ),
                 Container(
@@ -184,7 +184,7 @@ class _FieldDetailState extends State<FieldDetail> {
               ],
             ),
             onPressed: () => _navigateToPredictedYieldPage(
-                context, this.field), // todo show the predicted yield
+                context, this._field), // todo show the predicted yield
           )),
     );
     //height: 100,
@@ -215,7 +215,7 @@ class _FieldDetailState extends State<FieldDetail> {
               ],
             ),
             onPressed: () =>
-                _navigateToDetailIrrigationPage(context, this.field),
+                _navigateToDetailIrrigationPage(context, this._field),
           ),
         ));
   }
