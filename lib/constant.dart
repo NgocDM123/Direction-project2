@@ -23,9 +23,9 @@ class Constant {
   static const START_TIME = 'startTime';
   static const FIELD_CAPACITY = 'fieldCapacity';
   static const FIELD_CAPACITY_DISPLAY = 'Field capacity to maintain (%)';
-  static const latitude = 14.24; // vi do
-  static const longitude = 102.69; // kinh do
-  static const elevation = 295.0; // do cao so voi muc nuoc bien
+  static const latitude = 21.0075; // vi do
+  static const longitude = 105.5416; // kinh do
+  static const elevation = 16; // do cao so voi muc nuoc bien
   static const height = 2.5; // do cao
   static const nSoilLayer = 5;
   static const ACREAGE = 'acreage';

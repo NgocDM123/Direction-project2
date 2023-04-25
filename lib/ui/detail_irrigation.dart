@@ -91,11 +91,12 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
           this.selectedStartTime = DateTime.parse(s);
           s = snapshot.child('duration').value.toString();
           var duration = double.parse(s);
-          this.amount = (duration *
+          double tmp = (duration *
               this.field.customizedParameters.dripRate /
               this.field.customizedParameters.acreage *
               this.field.customizedParameters.numberOfHoles /
               3600);
+          this.amount = double.parse(tmp.toStringAsFixed(4));
         }
       }
     }
