@@ -188,7 +188,8 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               itemBuilder: (context) => [
                 PopupMenuItem(
                   child: TextButton(
-                    child: Text('${AppLocalizations.of(context)!.goToDetailIrrigation}'),
+                    child: Text(
+                        '${AppLocalizations.of(context)!.goToDetailIrrigation}'),
                     onPressed: () =>
                         _navigateToDetailIrrigationPage(context, this.field),
                   ),
@@ -230,8 +231,8 @@ class _CustomizedParametersPageState extends State<CustomizedParametersPage> {
               min: 0,
               max: 100,
               divisions: 100,
-              label: '${AppLocalizations.of(context)!.fieldCapacityToMaintain}'
-          ),
+              label:
+                  '${AppLocalizations.of(context)!.fieldCapacityToMaintain}'),
         ],
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,

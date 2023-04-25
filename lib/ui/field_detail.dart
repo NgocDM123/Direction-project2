@@ -118,10 +118,6 @@ class _FieldDetailState extends State<FieldDetail> {
           height: 70,
           child: ElevatedButton(
             style: Styles.fieldDetailButtonStyle,
-            // child: Text(
-            //   "Edit ${this.field.fieldName}",
-            //   style: Styles.fieldDetailButton,
-            // ),
             child: Stack(
               children: [
                 Container(

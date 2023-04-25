@@ -3,7 +3,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 import '../model/field.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +31,8 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.predictTheYieldOfField(this.field.fieldName)),
+        title: Text(AppLocalizations.of(context)!
+            .predictTheYieldOfField(this.field.fieldName)),
       ),
       body: _renderBody(),
     );
@@ -43,22 +43,22 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
     List<Widget> result = [];
     var xData = this.field.getDoy();
     var xTitle = this.field.getResultDay();
-    result.add(_renderChart(
-        AppLocalizations.of(context)!.yield, xData, this.field.predictYield(), xTitle));
-    result.add(_renderChart(
-        AppLocalizations.of(context)!.irrigation, xData, this.field.getIrrigation(), xTitle));
-    result.add(
-        _renderChart(AppLocalizations.of(context)!.leafAreaIndex, xData, this.field.getLai(), xTitle));
-    result.add(
-        _renderChart(AppLocalizations.of(context)!.labileCarbon, xData, this.field.getCLab(), xTitle));
+    result.add(_renderChart(AppLocalizations.of(context)!.yield, xData,
+        this.field.predictYield(), xTitle));
+    result.add(_renderChart(AppLocalizations.of(context)!.irrigation, xData,
+        this.field.getIrrigation(), xTitle));
+    result.add(_renderChart(AppLocalizations.of(context)!.leafAreaIndex, xData,
+        this.field.getLai(), xTitle));
+    result.add(_renderChart(AppLocalizations.of(context)!.labileCarbon, xData,
+        this.field.getCLab(), xTitle));
     result.add(_renderChart(AppLocalizations.of(context)!.topsoilWetness, xData,
         this.field.getTopSoilWetness(), xTitle));
     result.add(_renderChart(AppLocalizations.of(context)!.photosynthesis, xData,
         this.field.getPhotoSynthesis(), xTitle));
-    result.add(_renderChart(AppLocalizations.of(context)!.topsoilNContent, xData,
-        this.field.getTopsoilNContent(), xTitle));
-    result.add(_renderChart(
-        AppLocalizations.of(context)!.nStatus, xData, this.field.getNStatus(), xTitle));
+    result.add(_renderChart(AppLocalizations.of(context)!.topsoilNContent,
+        xData, this.field.getTopsoilNContent(), xTitle));
+    result.add(_renderChart(AppLocalizations.of(context)!.nStatus, xData,
+        this.field.getNStatus(), xTitle));
     return Container(
       margin: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       child: SingleChildScrollView(
@@ -73,11 +73,12 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
     return Container(
       margin: EdgeInsets.only(top: 5),
       child: RotationTransition(
-        turns: new AlwaysStoppedAnimation(- 15 / 360),
+        turns: new AlwaysStoppedAnimation(-15 / 360),
         child: Text("${DateFormat('dd-MM').format(this.field.getDay(value))}"),
       ),
     );
   }
+
 //Text("${DateFormat('dd-MM').format(this.field.getDay(value))}")
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     return Container(
@@ -165,5 +166,6 @@ class _PredictedYieldPageState extends State<PredictedYieldPage> {
 class ChartPoint {
   final double x;
   final double y;
+
   ChartPoint({required this.x, required this.y});
 }

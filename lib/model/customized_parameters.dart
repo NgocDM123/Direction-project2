@@ -83,7 +83,6 @@ class CustomizedParameters {
     this.acreage = double.parse(a.value.toString());
     a = snapshot.child("${Constant.NUMBER_OF_HOLES}");
     this.numberOfHoles = int.parse(a.value.toString());
-
   }
 
   Future<void> updateDataToDb() async {
