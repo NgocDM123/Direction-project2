@@ -31,7 +31,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
   @override
   void initState() {
     super.initState();
-    this.field.getGeneralDataFromDb();
+    _loadData();
   }
 
   @override
@@ -40,8 +40,18 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
       appBar: AppBar(
         title: Text('${_appBarText()}'),
       ),
-      body: _loadDataBeforeRenderBody(),
+      body: _refreshBody()
     );
+  }
+
+  Widget _refreshBody() {
+    return RefreshIndicator(child: _loadDataBeforeRenderBody(), onRefresh: _pullFresh);
+  }
+
+  Future<void> _pullFresh() async{
+    setState(() {
+      _loadData();
+    });
   }
 
   Widget _loadDataBeforeRenderBody() {
@@ -228,6 +238,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
 
   Widget _renderBody() {
     return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Container(
       child: Column(
         children: [
@@ -269,6 +280,20 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
             ),
             height: 50,
             padding: const EdgeInsets.all(3.0),
+            margin: EdgeInsets.only(bottom: 10),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                borderRadius: new BorderRadius.circular(25),
+                border: Border.all(color: Styles.blueColor)),
+          ),
+          Container(
+            child: Text(
+              '${AppLocalizations.of(context)!.amountOfIrrigation}: ${this.amount} (l/m^2)',
+              style: Styles.timeTitle,
+            ),
+            height: 50,
+            padding: const EdgeInsets.all(3.0),
+            margin: EdgeInsets.only(bottom: 10),
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 borderRadius: new BorderRadius.circular(25),
@@ -430,6 +455,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
             updates["${Constant.IRRIGATION_INFORMATION}"] = {
               "time": this.selectedStartTime.toString(),
               "duration": setDuration,
+              "amount": this.amount,
               // "${day}": tIrr
             };
             FirebaseDatabase.instance

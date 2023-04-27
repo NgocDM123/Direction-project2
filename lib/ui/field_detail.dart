@@ -38,7 +38,17 @@ class _FieldDetailState extends State<FieldDetail> {
         appBar: AppBar(
           title: Text(this._field.fieldName),
         ),
-        body:_loadDataBeforeRenderBody(context, _field));
+        body:_refreshBody(context, _field));
+  }
+
+  Widget _refreshBody(BuildContext context, Field field) {
+    return RefreshIndicator(child: _loadDataBeforeRenderBody(context, field), onRefresh: _pullFresh);
+  }
+
+  Future<void> _pullFresh() async{
+    setState(() {
+      _loadData();
+    });
   }
 
   Widget _loadDataBeforeRenderBody(BuildContext context, Field field) {
@@ -64,7 +74,6 @@ class _FieldDetailState extends State<FieldDetail> {
 
   _loadData() async {
     await this._field.runModel();
-    //await this.field.getMeasuredDataFromDb();
   }
 
   Widget _renderBody(BuildContext context, Field field) {
@@ -74,6 +83,7 @@ class _FieldDetailState extends State<FieldDetail> {
     result.add(_renderEditField());
     result.add(_renderDownloadWeatherData());
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,

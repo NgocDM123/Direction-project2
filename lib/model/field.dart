@@ -189,14 +189,16 @@ class Field {
   } //(done)
 
   Future<void> getMeasuredDataFromDb() async {
-    await writeWeatherDataToCsvFile();
-    await loadAllWeatherDataFromCsvFile();
-    var data = _weatherData.last;
-    this.measuredData.radiation = data[_iRadiation];
-    this.measuredData.rainFall = data[_iRain];
-    this.measuredData.relativeHumidity = data[_iRH];
-    this.measuredData.temperature = data[_iTemp];
-    this.measuredData.windSpeed = data[_iWind];
+    // await writeWeatherDataToCsvFile();
+    // await loadAllWeatherDataFromCsvFile();
+    // var data = _weatherData.last;
+    // this.measuredData.radiation = data[_iRadiation];
+    // this.measuredData.rainFall = data[_iRain];
+    // this.measuredData.relativeHumidity = data[_iRH];
+    // this.measuredData.temperature = data[_iTemp];
+    // this.measuredData.windSpeed = data[_iWind];
+    this.measuredData.getWeatherDataFromDb();
+    this.measuredData.getHumidityDataFromDb();
   }
 
   Future<void> getIrrigationCheckFromDb() async {
@@ -224,9 +226,6 @@ class Field {
     a = snapshot.child('${Constant.END_IRRIGATION}').value;
     this.endIrrigation = a.toString();
     a = snapshot.child('${Constant.START_TIME}').value;
-    DataSnapshot tmp = snapshot.child('humidity_hour').children.last.children.last;
-    this.measuredData.soil30Humidity = double.parse(tmp.child('humidity30').value.toString());
-    this.measuredData.soil60Humidity = double.parse(tmp.child('humidity60').value.toString());
   }
 
   Future<void> getDataFromDb() async {
