@@ -75,5 +75,6 @@
   "temperature": "Nhiệt độ",
   "windSpeed": "Tốc độ gió",
   "soil30Humidity": "Độ ẩm đất ở độ sâu 30cm",
-  "soil60Humidity": "Độ ẩm đất ở độ sâu 60cm"
+  "soil60Humidity": "Độ ẩm đất ở độ sâu 60cm",
+  "irrigationHistory": "Lịch sử tưới tiêu"
 }

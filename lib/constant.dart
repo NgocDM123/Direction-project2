@@ -47,6 +47,7 @@ class Constant {
   static const IRRIGATION_INFORMATION = 'irrigation_information';
   static const AMOUNT_OF_IRRIGATION = 'amount';
   static const SOIL_HUMIDITY = 'humidity_hour';
+  static const IRRIGATION_HISTORY = 'irrigation_history';
   static String format(int n) {
     if (n < 10)
       return '0$n';

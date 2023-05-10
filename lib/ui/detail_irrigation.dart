@@ -78,7 +78,7 @@ class _DetailIrrigationState extends State<DetailIrrigation> {
   Future<void> _loadData() async {
     await this.field.getGeneralDataFromDb();
     await this.field.getMeasuredDataFromDb();
-    if (!this.field.irrigationCheck) {
+    if (true) {
       if (!this.field.customizedParameters.autoIrrigation) {
         DataSnapshot snapshot = await FirebaseDatabase.instance
             .ref(

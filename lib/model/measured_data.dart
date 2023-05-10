@@ -23,16 +23,6 @@ class MeasuredData {
       this.soil30Humidity,
       this.soil60Humidity);
 
-  MeasuredData.newOne(String name)
-      : fieldName = name,
-        rainFall = 0,
-        relativeHumidity = 0,
-        temperature = 0,
-        windSpeed = 0,
-        radiation = 0,
-        soil30Humidity = 0,
-        soil60Humidity = 0;
-
   Future<void> getHumidityDataFromDb() async {
     DateTime currentTime = DateTime.now();
     DataSnapshot snapshot = await FirebaseDatabase.instance
@@ -99,5 +89,16 @@ class MeasuredData {
     this.windSpeed =
         double.parse(time.child('${Constant.WIND_SPEED}').value.toString());
   }
+
+  MeasuredData.newOne(String name)
+      : fieldName = name,
+        rainFall = 0,
+        relativeHumidity = 0,
+        temperature = 0,
+        windSpeed = 0,
+        radiation = 0,
+        soil30Humidity = 0,
+        soil60Humidity = 0;
+
 
 }

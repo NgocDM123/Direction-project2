@@ -114,6 +114,7 @@ double photoFixMean(double ppfd, double lai,
 double fSLA(ct) {
   return (logistic(ct, x0: 0.04, xc: 60, k: 0.1, m: 0.0264));
 }
+
 // water uptake
 fKroot(th, rl) {
   final rth = relTheta(th);
@@ -140,7 +141,6 @@ class Field {
   MeasuredData measuredData;
   String startIrrigation;
   String endIrrigation;
-  // static final double pdt = 3.0;
   double _autoIrrigateTime = -1;
   List<List<double>> _results = [];
   final int _iTime = 0;
@@ -247,8 +247,9 @@ class Field {
 
   Future<List<List<dynamic>>> loadAllWeatherDataFromCsvFile() async {
     List<List<dynamic>> weatherData = [];
+    String path = "";
     final String directory = (await getApplicationSupportDirectory()).path;
-    final path = "$directory/${Constant.USER}/${this.fieldName}.csv";
+    path = "$directory/${Constant.USER}/${this.fieldName}.csv";
     final csvFile = new File(path).openRead();
     weatherData = await csvFile
         .transform(utf8.decoder)
@@ -298,32 +299,31 @@ class Field {
 
   List<double> getPhotoSynthesis() {
     List<double> r = List.generate(_results[5].length,
-            (index) => double.parse((_results[5][index]).toStringAsFixed(2)));
+        (index) => double.parse((_results[5][index]).toStringAsFixed(2)));
     return r;
   }
 
   List<double> getTopsoilNContent() {
     List<double> r = List.generate(_results[6].length,
-            (index) => double.parse((_results[6][index]).toStringAsFixed(2)));
+        (index) => double.parse((_results[6][index]).toStringAsFixed(2)));
     return r;
   }
 
   List<double> getNStatus() {
     List<double> r = List.generate(_results[7].length,
-            (index) => double.parse((_results[7][index]).toStringAsFixed(2)));
+        (index) => double.parse((_results[7][index]).toStringAsFixed(2)));
     return r;
   }
 
   List<DateTime> getResultDay() {
-    List<DateTime> r = List.generate(_results[8].length, (index) => _getDay(_results[8][index]));
+    List<DateTime> r = List.generate(
+        _results[8].length, (index) => _getDay(_results[8][index]));
     return r;
   }
 
   DateTime getDay(double day) {
     return _getDay(day);
   }
-
-
 
   Future<List<List<dynamic>>> _getAllWeatherDataFromDb(
       bool check, DateTime dateTime) async {
@@ -484,6 +484,7 @@ class Field {
     if (this.customizedParameters.autoIrrigation) _updateAutoIrrigationInfo();
     // if (this.customizedParameters.autoIrrigation) updateIrrigationToDb();
   }
+
 //in order to displaying for user
   double getIrrigationAmount() {
     var length = _results[2].length;
@@ -498,6 +499,7 @@ class Field {
     String formattedDate = DateFormat('dd-MM-yyyy').format(day);
     return formattedDate;
   }
+
 //write to db
   _updateAutoIrrigationInfo() {
     var length = _results[2].length;
@@ -510,12 +512,14 @@ class Field {
         (this.customizedParameters.dripRate *
             this.customizedParameters.numberOfHoles) *
         3600; //convert to second
-    var day = _getDay(_results[8].last);
-    String formattedData = DateFormat('yyyy-MM-dd').format(day);
+    DateTime day = _getDay(_results[8].last);
+    day.add(Duration(hours: 8));
+    DateTime d = DateTime (day.year, day.month, day.day, 8, day.minute, day.second);
     final Map<String, dynamic> updates = {};
     updates["${Constant.IRRIGATION_INFORMATION}"] = {
+      "amount": irr,
       "duration": duration,
-      "time": formattedData,
+      "time": d.toString(),
       // "${day}": tIrr
     };
     FirebaseDatabase.instance
@@ -667,7 +671,8 @@ class Field {
       var tempC = _weatherData[i][_iTemp];
       wd.add(tempC); //wd[1]
       var radiation = _weatherData[i][_iRadiation];
-      wd.add(2.5 * radiation); // ppfd = 2.5 * radiation, wd[2], photosynthetic photon flux density
+      wd.add(2.5 *
+          radiation); // ppfd = 2.5 * radiation, wd[2], photosynthetic photon flux density
       var relativeHumidity = _weatherData[i][_iRH];
       var wind = _weatherData[i][_iWind];
       var doy = _weatherData[i][_iDOY];

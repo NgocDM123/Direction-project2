@@ -22,7 +22,6 @@ class FieldList extends StatefulWidget {
 class _FieldListState extends State<FieldList> {
   List<Field> _fields = [];
   bool _displayForm = false;
-
   @override
   void initState() {
     super.initState();
@@ -61,6 +60,8 @@ class _FieldListState extends State<FieldList> {
   }
 
   Widget _renderFieldList(BuildContext context) {
+    // _fields.add(Field.newOne('test'));
+    // _fields.elementAt(0).test = true;
     return Container(
       child: FutureBuilder<DataSnapshot>(
         future: this.getFieldNameFromDb(),
