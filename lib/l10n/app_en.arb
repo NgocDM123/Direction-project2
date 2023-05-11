@@ -64,7 +64,7 @@
   "autoIrrigation": "Auto irrigation",
   "goToDetailIrrigation": "Go to the detail irrigation page",
   "fieldCapacityToMaintain": "Field capacity to maintain (%)",
-  "durationOfIrrigation": "Duration of irrigation (h)",
+  "durationOfIrrigation": "Duration of irrigation",
   "dripRate":"Drip rate of single hole (l/h/hole)",
   "distanceBetweenHoles": "Distance between holes (cm)",
   "distanceBetweenRows": "Distance between rows (cm)",

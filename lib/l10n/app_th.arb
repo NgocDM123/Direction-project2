@@ -50,7 +50,7 @@
     "autoIrrigation": "การให้น้ำอัตโนมัติ",
     "goToDetailIrrigation": "ไปยังหน้าตรวจสอบการให้น้ำ",
     "fieldCapacityToMaintain": "ความจุของดินที่ต้องรักษา (%)",
-    "durationOfIrrigation": "ระยะเวลาในการให้น้ำ (ชม.)",
+    "durationOfIrrigation": "ระยะเวลาในการให้น้ำ",
     "dripRate": "อัตราการไหลของน้ำในรูปั๊มเดียว (ลิตร/ชม./รู)",
     "distanceBetweenHoles": "ระยะห่างระหว่างรู (ซม.)",
     "distanceBetweenRows": "ระยะห่างระหว่างแถว (ซม.)",

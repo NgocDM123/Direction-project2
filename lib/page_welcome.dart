@@ -16,7 +16,6 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: Colors.white54,
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.tab1),
-        automaticallyImplyLeading: false, //jp added because of graph
       ),
       body: Center(
         child: Column(

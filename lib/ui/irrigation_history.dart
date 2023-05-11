@@ -82,7 +82,7 @@ class _IrrigationHistoryState extends State<IrrigationHistory> {
     );
   }
   Widget _renderIrrigationRecord(IrrigationRecord irrigationRecord) {
-    String formattedDate = DateFormat("yyyy-MM-dd HH:mm").format(irrigationRecord.time);
+    String formattedDate = DateFormat("HH:mm dd-MM-yyyy").format(irrigationRecord.time);
     return Container(
       decoration: Styles.boxDecoration,
       height: 120,
@@ -110,6 +110,10 @@ class _IrrigationHistoryState extends State<IrrigationHistory> {
       DateTime time = DateTime.parse(child.child("startIrrigation").value.toString());
       this.irrigationRecords.add(IrrigationRecord(amount: amount, duration: duration, time: time));
     }
-    //this.irrigationRecords.sort((a, b) => a.time.compareTo(b.time));
+    this.irrigationRecords.sort((a,b){
+      if (a.time.isBefore(b.time)) return 1;
+      else return 0;
+    });
+    // this.irrigationRecords.sort((a, b) => b.time.compareTo(a.time));
   }
 }

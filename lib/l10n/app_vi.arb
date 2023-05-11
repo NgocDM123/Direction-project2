@@ -50,7 +50,7 @@
   "autoIrrigation": "Tưới tự động",
   "goToDetailIrrigation": "Go to the detail irrigation page",
   "fieldCapacityToMaintain": "Phần trăm độ ẩm tối đa cần duy trì (%)",
-  "durationOfIrrigation": "Thời gian tưới (h)",
+  "durationOfIrrigation": "Thời gian tưới",
   "dripRate":"Tốc độ nhỏ giọt của mỗi lỗ tưới (l/h/hole)",
   "distanceBetweenHoles": "Khoảng cách giữa các lỗ (cm)",
   "distanceBetweenRows": "Khoảng cách giữa các hàng (cm)",
